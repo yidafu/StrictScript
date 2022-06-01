@@ -1,0 +1,2 @@
+# StrictScript
+Typescript subset Implement. 
