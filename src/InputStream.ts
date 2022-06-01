@@ -1,4 +1,4 @@
-class CharStream {
+class InputStream {
   data: string;
 
   position = 0;
@@ -12,11 +12,11 @@ class CharStream {
   }
 
   peek(): string {
-    return this.data[this.position];
+    return this.data.charAt(this.position);
   }
 
   next(): string {
-    const char = this.data[this.position++];
+    const char = this.data.charAt(this.position++);
     if (char === '\n') {
       this.line ++;
       this.column = 0;
@@ -31,4 +31,4 @@ class CharStream {
   }
 }
 
-export { CharStream };
+export { InputStream };

@@ -15,7 +15,7 @@ export function isCharacterDigitOrUnderScore(char: string): boolean {
   return isCharacter(char) || isDigit(char) || char === '_';
 }
 
-const SEPERATOR = ['(', ')', '{', '}', ','];
+const SEPERATOR = ['(', ')', '{', '}', ';', ','];
 
 export function isSeperator(char: string) {
   return SEPERATOR.includes(char);

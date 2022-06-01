@@ -1,4 +1,4 @@
-import { CharStream } from "../CharStream";
+import { InputStream } from "../InputStream";
 import { isCharacter, isCharacterDigitOrUnderScore, isDigit, isSeperator, isWhiteSpace } from "./utils";
 
 enum TokenType {
@@ -7,7 +7,7 @@ enum TokenType {
   StringLiteral,
   Seperator,
   Operator,
-  EOF
+  EOF,
 }
 
 interface Token {
@@ -18,17 +18,28 @@ interface Token {
 
 
 class Tokenizer {
-  stream: CharStream;
+  stream: InputStream;
 
-  nextToken: Tokenizer;
+  nextToken: Token = { type: TokenType.EOF, value: ''};
 
-  constructor(stream: CharStream) {
+  constructor(stream: InputStream) {
     this.stream = stream;
   }
 
-  next(): Token {}
+  next(): Token | null {
+    const lastToken = this.peek();
 
-  peek(): Token {}
+    this.nextToken = this.getAToken();
+
+    return lastToken;
+  }
+
+  peek(): Token | null {
+    if (this.nextToken?.type === TokenType.EOF && !this.stream.eof()) {
+      this.nextToken = this.getAToken();
+    }
+    return this.nextToken;
+  }
 
 
   getAToken(): Token {
@@ -42,7 +53,7 @@ class Tokenizer {
     }
 
     if (char === '"') {
-      this.parseStringLiteral();
+      return this.parseStringLiteral();
     }
 
     if (isSeperator(char)) {
@@ -121,7 +132,7 @@ class Tokenizer {
     }
 
     if (token.value === 'function') {
-      token.type === TokenType.Keyword;
+      token.type = TokenType.Keyword;
     }
     return token;
   }
@@ -165,3 +176,5 @@ class Tokenizer {
     }
   }
 }
+
+export { Tokenizer, TokenType, Token }
