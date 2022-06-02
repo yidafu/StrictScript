@@ -15,8 +15,6 @@ interface Token {
   value: string
 }
 
-
-
 class Tokenizer {
   stream: InputStream;
 
@@ -149,14 +147,14 @@ class Tokenizer {
       this.stream.next();
       return token;
     }
-    throw new Error(`Expecting a \" as line: ${this.stream.line}, cloumn: ${this.stream.column}`);
+    throw new Error(`Expecting a " as line: ${this.stream.line}, cloumn: ${this.stream.column}`);
   }
 
   skipMultipleLineComment(): void {
     if(!this.stream.eof()) {
       let char1 = this.stream.next();
       while(!this.stream.eof()) {
-        let char2 = this.stream.next();
+        const char2 = this.stream.next();
         if(char1 === '*' && char2 === '/') {
           return;
         }
@@ -177,4 +175,4 @@ class Tokenizer {
   }
 }
 
-export { Tokenizer, TokenType, Token }
+export { Tokenizer, TokenType, Token };
