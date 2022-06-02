@@ -1,7 +1,7 @@
-import { FunctionBody } from "../AstNode/FunctionBodyy";
-import { FunctionCall } from "../AstNode/FunctionCalll";
-import { FunctionDeclare } from "../AstNode/FunctionDeclaree";
-import { Program } from "../AstNode/Programm";
+import { FunctionBody } from "../AstNode/FunctionBody";
+import { FunctionCall } from "../AstNode/FunctionCall";
+import { FunctionDeclare } from "../AstNode/FunctionDeclare";
+import { Program } from "../AstNode/Program";
 import { isFunctionCall, isFunctionDeclare } from "../utils";
 
 abstract class AstVisitor {
@@ -9,29 +9,31 @@ abstract class AstVisitor {
     let retVal;
     for (const stmt of program.stmts) {
       if (isFunctionDeclare(stmt)) {
-        this.visitFunctionDeclare(stmt);
+        retVal = this.visitFunctionDeclare(stmt);
       }
     }
+    return retVal;
   }
 
   visitFunctionDeclare(funcDecl: FunctionDeclare) {
     return this.visitFunctionBody(funcDecl.body);
   }
 
-  visitFunctionBody(funcBody: FunctionBody) {
+  visitFunctionBody(funcBody: FunctionBody): any {
     let retVal: any;
     for (const stmt of funcBody.stmts) {
       if (isFunctionCall(stmt)) {
-        this.visitFunctionCall(stmt);
+        retVal = this.visitFunctionCall(stmt);
       }
     }
+    return retVal;
   }
 
-  visitFunctionCall(funcCall: FunctionCall): any {
+  visitFunctionCall(_funcCall: FunctionCall): any {
     return;
   }
 }
 
 export {
   AstVisitor,
-}
+};

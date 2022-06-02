@@ -26,7 +26,7 @@ class Parser {
       if (stmt !== null) {
         stmts.push(stmt);
       } else {
-        throw new Error('Unrecognize Token: ' + token)
+        throw new Error('Unrecognize Token: ' + token);
       }
 
       token = this.tokenizer.peek();
@@ -44,7 +44,7 @@ class Parser {
       if (token1?.value === '(') {
         const token2 = this.tokenizer.next();
         if (token2?.value === ')') {
-          let functionBody = this.parseFunctionBody();
+          const functionBody = this.parseFunctionBody();
           if (functionBody !== null) {
             return new FunctionDeclare(token.value, functionBody);
           } else {
@@ -64,12 +64,12 @@ class Parser {
   }
 
   parseFunctionBody(): FunctionBody {
-    let stmts: FunctionCall[] = [];
+    const stmts: FunctionCall[] = [];
 
     const token = this.tokenizer.next();
     if (token?.value === "{") {
       while (this.tokenizer.peek()?.type == TokenType.Identifier) {
-        let functionCall = this.parseFunctionCall();
+        const functionCall = this.parseFunctionCall();
         if (functionCall !== null) {
           stmts.push(functionCall);
         } else {
@@ -115,7 +115,7 @@ class Parser {
         if (token2?.value === ';') {
           return new FunctionCall(token.value, params);
         } else {
-          throw new Error(`Expecting a semicolon in FunctionCall, while we got a ${token2?.type}`)
+          throw new Error(`Expecting a semicolon in FunctionCall, while we got a ${token2?.type}`);
         }
       }
     }

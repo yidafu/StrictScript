@@ -17,4 +17,4 @@ class FunctionCall extends Statement {
 
 }
 
-export { FunctionCall }
+export { FunctionCall };
