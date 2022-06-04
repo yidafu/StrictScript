@@ -15,6 +15,10 @@ interface Token {
   value: string
 }
 
+type KeyWord = 'let' | 'const' | 'function' | 'class' | 'delete' | 'return' 
+| 'break' | 'continue' | 'if' | 'else' | 'for' | 'try' | 'catch' | 'in' | 'this' 
+| 'switch' | 'instanceof' | 'true' | 'false' | 'new' | 'default';
+
 class Tokenizer {
   stream: InputStream;
 
