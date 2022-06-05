@@ -2,7 +2,7 @@ import { FunctionBody } from "../AstNode/FunctionBody";
 import { FunctionCall } from "../AstNode/FunctionCall";
 import { FunctionDeclare } from "../AstNode/FunctionDeclare";
 import { Program } from "../AstNode/Program";
-import { isBuiltinFunction, isFunctionCall, isFunctionDeclare } from "../utils";
+import { isBuiltinFunction, isFunctionCall, isFunctionDeclare } from "../AstNode";
 import { AstVisitor } from "./AstVisitor";
 
 class RefResolver extends AstVisitor {

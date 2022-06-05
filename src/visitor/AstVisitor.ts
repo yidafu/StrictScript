@@ -2,7 +2,7 @@ import { FunctionBody } from "../AstNode/FunctionBody";
 import { FunctionCall } from "../AstNode/FunctionCall";
 import { FunctionDeclare } from "../AstNode/FunctionDeclare";
 import { Program } from "../AstNode/Program";
-import { isFunctionCall, isFunctionDeclare } from "../utils";
+import { isFunctionCall, isFunctionDeclare } from "../AstNode";
 
 abstract class AstVisitor {
   visitProgram(program: Program) {

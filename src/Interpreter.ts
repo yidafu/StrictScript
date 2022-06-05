@@ -1,7 +1,7 @@
 import { FunctionBody } from "./AstNode/FunctionBody";
 import { FunctionCall } from "./AstNode/FunctionCall";
 import { Program } from "./AstNode/Program";
-import { isFunctionCall } from "./utils";
+import { isFunctionCall } from "./AstNode";
 import { AstVisitor } from "./visitor/AstVisitor";
 
 class Interpreter extends AstVisitor {

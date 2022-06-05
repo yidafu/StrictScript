@@ -23,7 +23,8 @@ interface Token {
 class Tokenizer {
   stream: InputStream;
 
-  nextToken: Token = { type: TokenType.EOF, value: ''};
+  currToken: Token = { type: TokenType.EOF, value: '' };
+  postToken: Token = { type: TokenType.EOF, value: ''};
 
   constructor(stream: InputStream) {
     this.stream = stream;
@@ -31,17 +32,28 @@ class Tokenizer {
 
   next(): Token | null {
     const lastToken = this.peek();
-
-    this.nextToken = this.getAToken();
+    if (this.postToken.type !== TokenType.EOF) {
+      this.currToken = this.postToken;
+      this.postToken = { type: TokenType.EOF, value: '' };
+    } else {
+      this.currToken = this.getAToken();
+    }
 
     return lastToken;
   }
 
   peek(): Token | null {
-    if (this.nextToken?.type === TokenType.EOF && !this.stream.eof()) {
-      this.nextToken = this.getAToken();
+    if (this.currToken?.type === TokenType.EOF && !this.stream.eof()) {
+      this.currToken = this.getAToken();
     }
-    return this.nextToken;
+    return this.currToken;
+  }
+
+  peek2() {
+    if (this.postToken.type === TokenType.EOF && !this.stream.eof()) {
+      this.postToken = this.getAToken();
+    }
+    return this.postToken;
   }
 
 

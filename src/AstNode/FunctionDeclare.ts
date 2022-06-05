@@ -1,15 +1,16 @@
+import { Declare } from "./Declare";
 import { FunctionBody } from "./FunctionBody";
-import { Statement } from "./Statement";
 
-class FunctionDeclare extends Statement {
-  name: string;
+class FunctionDeclare extends Declare {
   body: FunctionBody;
 
   constructor(name: string, body: FunctionBody) {
-    super();
-    this.name = name;
+    super(name);
     this.body = body;
   }
+
+  public accept() {}
+
 }
 
 export { FunctionDeclare };

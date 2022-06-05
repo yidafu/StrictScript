@@ -1,7 +1,8 @@
+import { AstNode } from "./AstNode";
 import { FunctionDeclare } from "./FunctionDeclare";
-import { Statement } from "./Statement";
 
-class FunctionCall extends Statement {
+
+class FunctionCall extends AstNode {
   name: string;
 
   parameters:  string[];
