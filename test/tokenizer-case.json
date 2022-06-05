@@ -1,0 +1,116 @@
+[{
+    "name": "variable declare",
+    "sourceCode": "let name: string = \"\"",
+    "tokens": [{
+        "type": "keyword",
+        "value": "let"
+      },
+      {
+        "type": "identifier",
+        "value": "name"
+      },
+      {
+        "type": "seperator",
+        "value": ":"
+      },
+      {
+        "type": "identifier",
+        "value": "string"
+      },
+      {
+        "type": "operator",
+        "value": "="
+      },
+      {
+        "type": "string-literal",
+        "value": ""
+      }
+    ]
+  },
+  {
+    "name": "plus expression",
+    "sourceCode": "1 + 2.0 + 0.13",
+    "tokens": [{
+        "type": "integer-literal",
+        "value": "1"
+      },
+      {
+        "type": "operator",
+        "value": "+"
+      },
+      {
+        "type": "decimal-literal",
+        "value": "2.0"
+      },
+      {
+        "type": "operator",
+        "value": "+"
+      },
+      {
+        "type": "decimal-literal",
+        "value": "0.13"
+      }
+    ]
+  },
+  {
+    "name": "function declare",
+    "sourceCode": "function test(param: string) {\nprintln(\"test\");\n}\n",
+    "tokens": [{
+        "type": "keyword",
+        "value": "function"
+      },
+      {
+        "type": "identifier",
+        "value": "test"
+      },
+      {
+        "type": "seperator",
+        "value": "("
+      },
+      {
+        "type": "identifier",
+        "value": "param"
+      },
+      {
+        "type": "seperator",
+        "value": ":"
+      },
+      {
+        "type": "identifier",
+        "value": "string"
+      },
+      {
+        "type": "seperator",
+        "value": ")"
+      },
+      {
+        "type": "seperator",
+        "value": "{"
+      },
+      {
+        "type": "identifier",
+        "value": "println"
+      },
+      {
+        "type": "seperator",
+        "value": "("
+      },
+      {
+        "type": "string-literal",
+        "value": "test"
+      },
+      {
+        "type": "seperator",
+        "value": ")"
+      },
+      {
+        "type": "seperator",
+        "value": ";"
+      },
+      {
+        "type": "seperator",
+        "value": "}"
+      }
+    ]
+  }
+]
