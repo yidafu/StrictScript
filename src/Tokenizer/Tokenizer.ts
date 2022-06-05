@@ -1,23 +1,24 @@
 import { InputStream } from "../InputStream";
-import { isCharacter, isCharacterDigitOrUnderScore, isDigit, isSeperator, isWhiteSpace } from "./utils";
+import { isCharacter, isCharacterDigitOrUnderScore, isDigit, isKeyword, isOperator, isSeperator, isWhiteSpace } from "./utils";
 
-enum TokenType {
-  Keyword,
-  Identifier,
-  StringLiteral,
-  Seperator,
-  Operator,
-  EOF,
+export enum TokenType {
+  Keyword = 'keyword',
+  Identifier = 'identifier',
+  StringLiteral = 'string-literal',
+  NullLiteral = 'null-literal',
+  UndefinedLiteral = 'undefined-literal',
+  BooleanLiteral = 'boolean-literal',
+  DecimalLiteral = 'decimal-literal',
+  IntegerLiteral = 'integer-literal',
+  Seperator = 'seperator',
+  Operator = 'operator',
+  EOF = 'eof',
 }
 
 interface Token {
   type: TokenType;
   value: string
 }
-
-type KeyWord = 'let' | 'const' | 'function' | 'class' | 'delete' | 'return' 
-| 'break' | 'continue' | 'if' | 'else' | 'for' | 'try' | 'catch' | 'in' | 'this' 
-| 'switch' | 'instanceof' | 'true' | 'false' | 'new' | 'default';
 
 class Tokenizer {
   stream: InputStream;
@@ -50,7 +51,7 @@ class Tokenizer {
       return { type: TokenType.EOF, value: '' };
     }
     const char = this.stream.peek();
-    if (isCharacter(char) || isDigit(char)) {
+    if (isCharacter(char)) {
       return this.parseIdentifier();
     }
 
@@ -65,60 +66,149 @@ class Tokenizer {
       };
     }
 
-    if (char === '/') {
+    if (isDigit(char)) {
       this.stream.next();
-      const char1 = this.stream.peek();
-      if (char1 === '*') {
+      let char1 = this.stream.peek();
+      let numberLiteral = '';
+      if (char === '0' && char1 !== '.') {
+        if (!(char1 >= '1' && char1 <= '9')) {
+          // TODO: 支持八进制、二进制、十六进制
+          numberLiteral = '0';
+        } else {
+          throw new Error(`0 cannot followed by other digit. at line: ${this.stream.line} col: ${this.stream.column}`);
+        }
+      } else if ((char >= '1' && char <= '9') || (char === '0' && char1 === '.')) {
+        numberLiteral += char;
+        while (isDigit(char1)) {
+          numberLiteral += this.stream.next();
+          char1 = this.stream.peek();
+        }
+        if (char1 === '.') {
+          numberLiteral += this.stream.next();
+          char1 = this.stream.peek();
+          while(isDigit(char1)) {
+            numberLiteral += this.stream.next();
+            char1 = this.stream.peek();
+          }
+          return { type: TokenType.DecimalLiteral, value: numberLiteral };
+        } else {
+          return { type: TokenType.IntegerLiteral, value: numberLiteral };
+        }
+      }
+      // can't being execute
+      throw new Error(`Unrecongnized pattern meeting: ${char}, at line: ${this.stream.line} col: ${this.stream.column}`);
+    }
+
+    if (char === '.') {
+      this.stream.next();
+      let char1 = this.stream.peek();
+      if (isDigit(char1)) {
+        let numberLiteral = '.';
+        while (isDigit(char1)) {
+          numberLiteral += this.stream.next();
+          char1 = this.stream.next();
+        }
+        return { type: TokenType.DecimalLiteral, value: numberLiteral };
+      } else if (char1 === '.') {
         this.stream.next();
-        this.skipMultipleLineComment();
-        return this.getAToken();
-      } else if (char === '/') {
-        this.stream.next();
-        this.skipSingleLineComment();
-        return this.getAToken();
-      } else if (char === '=') {
-        this.stream.next();
-        return { type: TokenType.Operator, value: '/=' };
+        const char2 = this.stream.peek();
+        if (char2 === '.') {
+          return { type: TokenType.Seperator, value: '...' };
+        } else {
+          throw new Error('Unrecognized patter: ..., missd a . ?');
+        }
       } else {
-        return { type:TokenType.Seperator, value: '/' };
+        return { type: TokenType.Seperator, value: '.' };
       }
     }
 
-    if (char === '+') {
-      this.stream.next();
-      const char1 = this.stream.peek();
-      if (char1 === '+') {
+    if (isOperator(char)) {
+      if (char === '/') {
         this.stream.next();
-        return { type: TokenType.Operator, value: '++' };
-      } else if (char1 === '=') {
-        return { type: TokenType.Operator, value: '+=' };
-      } else {
-        return { type: TokenType.Operator, value: '+' };
+        const char1 = this.stream.peek();
+        if (char1 === '*') {
+          this.stream.next();
+          this.skipMultipleLineComment();
+          return this.getAToken();
+        } else if (char === '/') {
+          this.stream.next();
+          this.skipSingleLineComment();
+          return this.getAToken();
+        } else if (char === '=') {
+          this.stream.next();
+          return { type: TokenType.Operator, value: '/=' };
+        } else {
+          return { type: TokenType.Seperator, value: '/' };
+        }
       }
     }
 
-    if (char === '-') {
-      this.stream.next();
-      const char1 = this.stream.peek();
-      if (char1 === '-') {
-        this.stream.next();
-        return { type: TokenType.Operator, value: '--' };
-      } else if (char1 === '=') {
-        return { type: TokenType.Operator, value: '-=' };
-      } else {
-        return { type: TokenType.Operator, value: '-' };
-      }
+    if (['+', '-', '*', '&', '|'].includes(char)) {
+      return this.parseBinaryOperator(char, char);
     }
 
-    if (char === '*') {
+    if (char === '&') {
       this.stream.next();
       const char1 = this.stream.peek();
-
       if (char1 === '=') {
-        return { type: TokenType.Operator, value: '*=' };
+        this.stream.next();
+        return { type: TokenType.Operator, value: '&=' };
       } else {
-        return { type: TokenType.Operator, value: '*' };
+        return { type: TokenType.Operator, value: '&' };
       }
+    }
+
+    if (char === '>') {
+      // TODO: >>>=, >>> 操作符
+      return this.parseBinaryOperator(char, char);
+    }
+    if (char === '<') {
+      // TODO: <<<=, <<< 操作符
+      return this.parseBinaryOperator(char, char);
+    }
+    if (char === '^') {
+      return this.parseBinaryOperator(char, '');
+    }
+
+    if (char === '!') {
+      this.stream.next();
+      const char1 = this.stream.peek();
+      if (char1 === '=') {
+        this.stream.next();
+        const char2 = this.stream.peek();
+        if (char2 === '=') {
+          this.stream.next();
+          return { type: TokenType.Operator, value: '!==' };
+        } else {
+          return { type: TokenType.Operator, value: '!=' };
+        }
+      } else {
+        return { type: TokenType.Operator, value: '!' };
+      }
+    }
+
+    if (char === '=') {
+      this.stream.next();
+      const char1 = this.stream.peek();
+      if (char1 === '=') {
+        this.stream.next();
+        const char2 = this.stream.peek();
+        if (char2 === '=') {
+          this.stream.next();
+          return { type: TokenType.Operator, value: '===' };
+        } else {
+          return { type: TokenType.Operator, value: '===' };
+        }
+      } else if (char1 === '>') {
+        this.stream.next();
+        return { type: TokenType.Operator, value: '=>' };
+      } else {
+        return { type: TokenType.Operator, value: '=' };
+      }
+    }
+
+    if (char === '~') {
+      return { type: TokenType.Operator, value: char };
     }
 
     throw new Error(`Unrecongnized pattern meeting: ${char}, at line: ${this.stream.line}, column: ${this.stream.column}`);
@@ -133,8 +223,14 @@ class Tokenizer {
       token.value += this.stream.next();
     }
 
-    if (token.value === 'function') {
-      token.type = TokenType.Keyword;
+    if (isKeyword(token.value)) {
+      if (token.value === 'null') {
+        token.type == TokenType.NullLiteral;
+      } else if (token.value === 'true' || token.value === 'false') {
+        token.type = TokenType.BooleanLiteral;
+      } else {
+        token.type = TokenType.Keyword;
+      }
     }
     return token;
   }
@@ -152,6 +248,20 @@ class Tokenizer {
       return token;
     }
     throw new Error(`Expecting a " as line: ${this.stream.line}, cloumn: ${this.stream.column}`);
+  }
+
+  parseBinaryOperator(firstChar: string, secondChar: string) {
+    this.stream.next();
+    const char1 = this.stream.peek();
+    if (char1 === secondChar) {
+      this.stream.next();
+      return { type: TokenType.Operator, value: firstChar + secondChar };
+    } else if (char1 === '=') {
+      this.stream.next();
+      return { type: TokenType.Operator, value: firstChar + '=' };
+    } else {
+      return { type: TokenType.Operator, value: firstChar };
+    }
   }
 
   skipMultipleLineComment(): void {
@@ -172,6 +282,7 @@ class Tokenizer {
       this.stream.next();
     }
   }
+
   skipWhiteSpaces() {
     while (isWhiteSpace(this.stream.peek())) {
       this.stream.next();
@@ -179,4 +290,4 @@ class Tokenizer {
   }
 }
 
-export { Tokenizer, TokenType, Token };
+export { Tokenizer, Token };
