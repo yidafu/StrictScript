@@ -1,37 +1,26 @@
-import { FunctionBody } from "../AstNode/FunctionBody";
+
 import { FunctionCall } from "../AstNode/FunctionCall";
 import { FunctionDeclare } from "../AstNode/FunctionDeclare";
 import { Program } from "../AstNode/Program";
-import { isBuiltinFunction, isFunctionCall, isFunctionDeclare } from "../utils";
+import { isBuiltinFunction, Variable, VariableDeclare } from "../AstNode";
 import { AstVisitor } from "./AstVisitor";
+import { SymbolTable, SymbolType } from "./SymbolTable";
 
 class RefResolver extends AstVisitor {
   program: Program | null = null;
 
+  symbolTable: SymbolTable;
 
-  visitProgram(program: Program): void {
-      this.program = program;
-      for (const stmt of program.stmts) {
-        if (isFunctionCall(stmt)) {
-          this.resolveFunctionCall(program, stmt);
-        } else if (isFunctionDeclare(stmt)){
-          this.visitFunctionDeclare(stmt);
-        }
-      }
+  constructor(symbolTable: SymbolTable) {
+    super();
+    this.symbolTable = symbolTable;
   }
 
-  visitFunctionBody(funcBody: FunctionBody) {
-    if (this.program !== null) {
-      for (const stmt of funcBody.stmts) {
-        return this.resolveFunctionCall(this.program, stmt);
-      }
-    }
-  }
+  visitFunctionCall(funcCall: FunctionCall) {
+    const symbol = this.symbolTable.getSymbol(funcCall.name);
 
-  resolveFunctionCall(program: Program, funcCall: FunctionCall) {
-    const funcDeclare = this.findFunctionDeclare(program, funcCall.name);
-    if (funcDeclare !== null) {
-      funcCall.definition = funcDeclare;
+    if (symbol !== null && symbol.type === SymbolType.Function) {
+      funcCall.declare = symbol.decalre as FunctionDeclare;
     } else {
       if (!isBuiltinFunction(funcCall.name)) {
         throw new Error(`Error: canot find definition of function: ${funcCall.name}`);
@@ -39,15 +28,13 @@ class RefResolver extends AstVisitor {
     }
   }
 
-  findFunctionDeclare(program: Program, name: string): FunctionDeclare | null {
-    for (const stmt of program.stmts) {
-      if (isFunctionDeclare(stmt)) {
-        if (stmt.name === name) {
-          return stmt;
-        }
-      }
+  visitVariable(variable: Variable): void {
+    const symbol = this.symbolTable.getSymbol(variable.name);
+    if (symbol !== null && symbol.type === SymbolType.Variable) {
+      variable.declare = symbol.decalre as VariableDeclare;
+    } else {
+      throw new Error(`canot find declaration of variable: ${variable.name}`);
     }
-    return null;
   }
 }
 

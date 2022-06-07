@@ -1,6 +1,6 @@
-import { FunctionCall } from "./AstNode/FunctionCall";
-import { FunctionDeclare } from "./AstNode/FunctionDeclare";
-import { Statement } from "./AstNode/Statement";
+import { FunctionCall } from "./FunctionCall";
+import { FunctionDeclare } from "./FunctionDeclare";
+import { Statement } from "./Statement";
 
 export function isFunctionDeclare(stmt: Statement): stmt is FunctionDeclare {
   if (stmt instanceof FunctionDeclare) {

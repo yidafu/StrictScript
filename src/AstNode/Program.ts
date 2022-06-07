@@ -1,12 +1,11 @@
-import { AstNode } from "./AstNode";
-import { Statement } from "./Statement";
+import { AstVisitor } from "../visitor";
+import { Block } from "./Block";
 
-class Program extends AstNode {
-  stmts: Statement[];
+class Program extends Block {
 
-  constructor(stmts: Statement[]) {
-    super();
-    this.stmts = stmts;
+
+  accept(visitor: AstVisitor) {
+    return visitor.visitProgram(this);
   }
 }
 
