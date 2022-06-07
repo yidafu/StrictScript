@@ -17,10 +17,10 @@ class RefResolver extends AstVisitor {
   }
 
   visitFunctionCall(funcCall: FunctionCall) {
-    let symbol = this.symbolTable.getSymbol(funcCall.name);
+    const symbol = this.symbolTable.getSymbol(funcCall.name);
 
     if (symbol !== null && symbol.type === SymbolType.Function) {
-      funcCall.definition = symbol.decalre as FunctionDeclare;
+      funcCall.declare = symbol.decalre as FunctionDeclare;
     } else {
       if (!isBuiltinFunction(funcCall.name)) {
         throw new Error(`Error: canot find definition of function: ${funcCall.name}`);

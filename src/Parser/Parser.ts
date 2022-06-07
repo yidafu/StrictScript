@@ -1,3 +1,4 @@
+import { throws } from "assert";
 import { BinaryExpression, Block, BooleanLiteral, DecimalLiteral, Expression, FunctionCall, FunctionDeclare, IntegetLiteral, Program, Statement, StringLiteral, Variable, VariableDeclare } from "../AstNode";
 import { Tokenizer, TokenType } from "../Tokenizer/Tokenizer";
 import { getPrecedence } from "./utils";
@@ -18,7 +19,7 @@ class Parser {
     let stmt: Statement | null = null;
     let token = this.tokenizer.peek();
     while (token !== null && token.type !== TokenType.EOF && token.value !== '}') {
-      stmt = this.parseStatement()
+      stmt = this.parseStatement();
       if (stmt !== null) {
         stmts.push(stmt);
       } else {
@@ -100,14 +101,14 @@ class Parser {
     let exp1 = this.parsePrimary();
     if (exp1 !== null) {
       let token = this.tokenizer.peek();
-      if (token?.type === TokenType.Operator) {
+      if (token !== null) {
         let targetPrecedence = getPrecedence(token.value);
 
         while (token?.type === TokenType.Operator && targetPrecedence > precedence) {
           this.tokenizer.next();
           const exp2 = this.parseBinary(targetPrecedence);
           if (exp2 !== null) {
-            let exp: BinaryExpression = new BinaryExpression(token.value, exp1, exp2);
+            const exp: BinaryExpression = new BinaryExpression(token.value, exp1, exp2);
             exp1 = exp;
             token = this.tokenizer.peek();
             targetPrecedence = getPrecedence(token?.value!);
@@ -210,28 +211,34 @@ class Parser {
   }
 
   parseFunctionCall(): FunctionCall | null {
-    const params: string[] = [];
+    const params: Expression[] = [];
     const token = this.tokenizer.next();
 
     if (token?.type == TokenType.Identifier) {
       const token1 = this.tokenizer.next();
       if (token1?.value === '(') {
-        let token2 = this.tokenizer.next();
-        while (token2?.value !== ')') {
-          if (token2?.type === TokenType.StringLiteral) {
-            params.push(token2.value);
-          } else {
-            throw new Error(`Expecting parameter in FunctionCall, while we got a ${token2?.value}`);
-          }
-          token2 = this.tokenizer.next();
-          if (token2?.value !== ')') {
-            if (token2?.value === ',') {
-              token2 = this.tokenizer.next();
+        let token2 = this.tokenizer.peek();
+        if (token2?.type === TokenType.Seperator && token.value !== ')') {
+          this.tokenizer.next();
+        } else {
+          while (token2?.value !== ')') {
+            const exp = this.parseExpression();
+            if (exp !== null) {
+              params.push(exp);
             } else {
-              throw new Error(`Expecting a comma in FunctionCall, while we got a ${token2?.value}`);
+              throw new Error(`Expecting parameter in FunctionCall, while we got a ${token2?.value}`);
+            }
+            token2 = this.tokenizer.next();
+            if (token2?.value !== ')') {
+              if (token2?.value === ',') {
+                token2 = this.tokenizer.next();
+              } else {
+                throw new Error(`Expecting a comma in FunctionCall, while we got a ${token2?.value}`);
+              }
             }
           }
         }
+
 
         token2 = this.tokenizer.next();
         if (token2?.value === ';') {

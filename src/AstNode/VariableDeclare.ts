@@ -15,7 +15,7 @@ class VariableDeclare extends Declare {
 
 
   accept(visitor: AstVisitor) {
-    return visitor.visitVariableDeclare(this)
+    return visitor.visitVariableDeclare(this);
   }
 }
 
