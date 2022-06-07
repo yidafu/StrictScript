@@ -1,3 +1,4 @@
+import { AstVisitor } from "../visitor";
 import { Expression } from "./Expression";
 
 class BinaryExpression extends Expression {
@@ -14,7 +15,9 @@ class BinaryExpression extends Expression {
     this.expR = expR;
   }
 
-  accept() {}
+  accept(visitor: AstVisitor) {
+    return visitor.visitBinary(this);
+  }
 }
 
 export { BinaryExpression };

@@ -1,3 +1,4 @@
+import { AstVisitor } from "../visitor";
 import { Declare } from "./Declare";
 import { Expression } from "./Expression";
 
@@ -12,7 +13,10 @@ class VariableDeclare extends Declare {
     this.init = initExp;
   }
 
-  accept() {}
+
+  accept(visitor: AstVisitor) {
+    return visitor.visitVariableDeclare(this)
+  }
 }
 
 export { VariableDeclare };

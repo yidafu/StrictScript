@@ -1,5 +1,6 @@
+import { AstVisitor } from "../visitor";
 import { AstNode } from "./AstNode";
 
-export class Expression extends AstNode {
+export abstract class Expression extends AstNode {
 
 }

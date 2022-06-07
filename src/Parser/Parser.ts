@@ -1,8 +1,4 @@
-import { FunctionBody } from "../AstNode/FunctionBody";
-import { FunctionCall } from "../AstNode/FunctionCall";
-import { FunctionDeclare } from "../AstNode/FunctionDeclare";
-import { Program } from "../AstNode/Program";
-import { Statement } from "../AstNode/Statement";
+import { BinaryExpression, Block, BooleanLiteral, DecimalLiteral, Expression, FunctionCall, FunctionDeclare, IntegetLiteral, Program, Statement, StringLiteral, Variable, VariableDeclare } from "../AstNode";
 import { Tokenizer, TokenType } from "../Tokenizer/Tokenizer";
 import { getPrecedence } from "./utils";
 
@@ -14,20 +10,15 @@ class Parser {
   }
 
   parseProgram() {
+    return new Program(this.parseStatementList());
+  }
+
+  parseStatementList(): Statement[] {
     const stmts: Statement[] = [];
     let stmt: Statement | null = null;
     let token = this.tokenizer.peek();
-    while (token !== null && token.type !== TokenType.EOF) {
-      if(token.type == TokenType.Keyword) {
-        if (token.value === 'function') {
-          stmt = this.parseFunctionDeclare();
-        } else if (token.value === 'let') {
-          stmt = this.parseVariableDeclare();
-        }
-      } else if (token.type === TokenType.Identifier){
-        stmt = this.parseFunctionCall();
-      }
-
+    while (token !== null && token.type !== TokenType.EOF && token.value !== '}') {
+      stmt = this.parseStatement()
       if (stmt !== null) {
         stmts.push(stmt);
       } else {
@@ -36,8 +27,30 @@ class Parser {
 
       token = this.tokenizer.peek();
     }
+    return stmts;
+  }
 
-    return new Program(stmts);
+  parseStatement(): Statement | null {
+    const token = this.tokenizer.peek();
+    if (token?.type === TokenType.Keyword) {
+      if (token.value === 'function') {
+        return this.parseFunctionDeclare();
+      }
+      if (token.value === 'let') {
+        return this.parseVariableDeclare();
+      }
+      throw new Error(`Not support keyword ${token.value}`);
+    } else if (token !== null && (
+      token.type === TokenType.Identifier
+      || token.type === TokenType.DecimalLiteral
+      || token.type === TokenType.IntegerLiteral
+      || token.type === TokenType.StringLiteral
+      || token.value === '('
+    )) {
+      return this.parseExpression();
+    } else {
+      throw new Error(`cannot recognize a expression starting with ${token?.value}`);
+    }
   }
 
   parseVariableDeclare() {
@@ -86,18 +99,18 @@ class Parser {
   parseBinary(precedence: number) {
     let exp1 = this.parsePrimary();
     if (exp1 !== null) {
-      const token = this.tokenizer.peek();
+      let token = this.tokenizer.peek();
       if (token?.type === TokenType.Operator) {
         let targetPrecedence = getPrecedence(token.value);
 
-        while (token.type === TokenType.Operator && targetPrecedence > precedence) {
+        while (token?.type === TokenType.Operator && targetPrecedence > precedence) {
           this.tokenizer.next();
           const exp2 = this.parseBinary(targetPrecedence);
           if (exp2 !== null) {
-            let exp: Binary = new Binary(token.value, exp1, exp2);
+            let exp: BinaryExpression = new BinaryExpression(token.value, exp1, exp2);
             exp1 = exp;
             token = this.tokenizer.peek();
-            targetPrecedence = getPrecedence(token?.value);
+            targetPrecedence = getPrecedence(token?.value!);
           } else {
             throw new Error(`cannot recognize a expression starting with: ${token?.value}`);
           }
@@ -115,11 +128,11 @@ class Parser {
         return this.parseFunctionCall();
       } else {
         this.tokenizer.next();
-        return new Varialble(token.value);
+        return new Variable(token.value);
       }
     } else if (token?.type === TokenType.IntegerLiteral) {
       this.tokenizer.next();
-      return new IntegerLiteral(parseInt(token.value));
+      return new IntegetLiteral(parseInt(token.value));
     } else if (token?.type === TokenType.DecimalLiteral) {
       this.tokenizer.next();
       return new DecimalLiteral(parseFloat(token.value));
@@ -172,7 +185,7 @@ class Parser {
 
   }
 
-  parseFunctionBody(): FunctionBody {
+  parseFunctionBody(): Block {
     const stmts: FunctionCall[] = [];
 
     const token = this.tokenizer.next();
@@ -187,7 +200,7 @@ class Parser {
       }
       const token1 = this.tokenizer.next();
       if (token1?.value === '}') {
-        return new FunctionBody(stmts);
+        return new Block(stmts);
       } else {
         throw new Error(`Expecting '}' in FunctionBody, while we got a ${token1?.value}`);
       }
@@ -204,7 +217,7 @@ class Parser {
       const token1 = this.tokenizer.next();
       if (token1?.value === '(') {
         let token2 = this.tokenizer.next();
-        while(token2?.value !== ')') {
+        while (token2?.value !== ')') {
           if (token2?.type === TokenType.StringLiteral) {
             params.push(token2.value);
           } else {

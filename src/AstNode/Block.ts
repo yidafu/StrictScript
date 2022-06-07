@@ -1,3 +1,4 @@
+import { AstVisitor } from "../visitor";
 import { AstNode } from "./AstNode";
 import { Statement } from "./Statement";
 
@@ -9,7 +10,9 @@ class Block extends AstNode {
     this.stmts = stmts;
   }
 
-  accept() {}
+  accept(visitor: AstVisitor) {
+    return visitor.visitBlock(this);
+  }
 }
 
 export { Block };

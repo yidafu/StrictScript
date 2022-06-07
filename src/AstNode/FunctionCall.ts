@@ -1,8 +1,10 @@
+import { AstVisitor } from "../visitor";
 import { AstNode } from "./AstNode";
 import { FunctionDeclare } from "./FunctionDeclare";
 
 
 class FunctionCall extends AstNode {
+
   name: string;
 
   parameters:  string[];
@@ -15,7 +17,9 @@ class FunctionCall extends AstNode {
     this.parameters = parameters;
   }
 
-
+  public accept(visitor: AstVisitor) {
+    return visitor.visitFunctionCall(this);
+  }
 }
 
 export { FunctionCall };

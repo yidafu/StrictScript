@@ -1,3 +1,4 @@
+import { AstVisitor } from "../visitor";
 import { Expression } from "./Expression";
 import { VariableDeclare } from "./VariableDeclare";
 
@@ -9,8 +10,9 @@ class Variable extends Expression {
     super();
     this.name = name;
   }
-
-  accept() {}
+  public accept(visitor: AstVisitor) {
+    return visitor.visitVariable(this);
+  }
 }
 
 export { Variable };

@@ -1,16 +1,18 @@
+import { AstVisitor } from "../visitor";
+import { Block } from "./Block";
 import { Declare } from "./Declare";
-import { FunctionBody } from "./FunctionBody";
 
 class FunctionDeclare extends Declare {
-  body: FunctionBody;
+  body: Block;
 
-  constructor(name: string, body: FunctionBody) {
+  constructor(name: string, body: Block) {
     super(name);
     this.body = body;
   }
 
-  public accept() {}
-
+  public accept(visitor: AstVisitor) {
+    return visitor.visitFunctionDeclare(this);
+  }
 }
 
 export { FunctionDeclare };
