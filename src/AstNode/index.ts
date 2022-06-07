@@ -21,3 +21,5 @@ export { UndefinedLiteral } from './UndefinedLiteral'
 
 export { Program } from './Program';
 export { Statement } from './Statement'
+
+export { Declare } from './Declare'

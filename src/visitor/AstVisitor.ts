@@ -62,7 +62,7 @@ abstract class AstVisitor {
     return exp.value;
   }
 
-  visitVariable(variable: Variable) {
+  visitVariable(variable: Variable): any {
     return undefined;
   }
 
