@@ -1,6 +1,7 @@
-import { BinaryExpression, Block, BooleanLiteral, DecimalLiteral, Expression, FunctionCall, FunctionDeclare, IntegetLiteral, Program, Statement, StringLiteral, Variable, VariableDeclare } from "../AstNode";
-import { Tokenizer, TokenType } from "../Tokenizer";
+import { BinaryExpression, Block, BooleanLiteral, DecimalLiteral, Expression, FunctionCall, FunctionDeclare, IntegetLiteral, Program, Statement, StringLiteral, Variable, VariableDeclare } from "../ast-node";
+import { Tokenizer, TokenType } from "../tokenizer";
 import { getPrecedence } from "./utils";
+
 
 class Parser {
   tokenizer: Tokenizer;

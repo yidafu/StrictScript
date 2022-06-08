@@ -1,5 +1,5 @@
-import { FunctionCall } from "./AstNode/FunctionCall";
-import { BinaryExpression, FunctionDeclare, Variable, VariableDeclare } from "./AstNode";
+import { FunctionCall } from "./ast-node/FunctionCall";
+import { BinaryExpression, FunctionDeclare, Variable, VariableDeclare } from "./ast-node";
 import { AstVisitor } from "./visitor/AstVisitor";
 
 class Interpreter extends AstVisitor {

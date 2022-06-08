@@ -1,10 +1,10 @@
 import {
   InputStream
-} from "../src/InputStream";
+} from "../src/tokenizer";
 import {
   Tokenizer,
   TokenType
-} from "../src/Tokenizer";
+} from "../src/tokenizer";
 
 import testCase from './tokenizer-case.json';
 

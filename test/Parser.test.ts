@@ -1,12 +1,12 @@
 import {
   InputStream
-} from "../src/InputStream";
+} from "../src/tokenizer/InputStream";
 import {
   Parser
-} from "../src/Parser";
+} from "../src/parser";
 import {
   Tokenizer
-} from "../src/Tokenizer/Tokenizer";
+} from "../src/tokenizer";
 
 function parse(str: string) {
   const parser = new Parser(new Tokenizer(new InputStream(str)));

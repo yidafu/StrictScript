@@ -1,5 +1,5 @@
 import { AstVisitor } from "../visitor";
-import { VariableSymbol } from "../visitor/VariableSymbol";
+import { VariableSymbol } from "../visitor/symbol";
 import { Expression } from "./Expression";
 import { VariableDeclare } from "./VariableDeclare";
 
