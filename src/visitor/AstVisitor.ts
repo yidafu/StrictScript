@@ -1,10 +1,10 @@
-import { FunctionCall } from "../AstNode/FunctionCall";
-import { FunctionDeclare } from "../AstNode/FunctionDeclare";
-import { Program } from "../AstNode/Program";
-import { BinaryExpression, BooleanLiteral, DecimalLiteral, ExpressionStatement, IntegetLiteral, NullLiteral, StringLiteral, UndefinedLiteral, VariableDeclare } from "../AstNode";
-import { AstNode } from "../AstNode";
-import { Block } from "../AstNode/Block";
-import { Variable } from "../AstNode/Variable";
+import { FunctionCall } from "../ast-node/FunctionCall";
+import { FunctionDeclare } from "../ast-node/FunctionDeclare";
+import { Program } from "../ast-node/Program";
+import { BinaryExpression, BooleanLiteral, DecimalLiteral, ExpressionStatement, IntegetLiteral, NullLiteral, StringLiteral, UndefinedLiteral, VariableDeclare } from "../ast-node";
+import { AstNode } from "../ast-node";
+import { Block } from "../ast-node/Block";
+import { Variable } from "../ast-node/Variable";
 
 abstract class AstVisitor {
   visit(node: AstNode) {
@@ -62,10 +62,12 @@ abstract class AstVisitor {
     return exp.value;
   }
 
-  visitVariable(variable: Variable): any {
+  // eslint-disable-next-line no-unused-vars
+  visitVariable(_variable: Variable): any {
     return undefined;
   }
 
+  // eslint-disable-next-line no-unused-vars
   visitFunctionCall(_funcCall: FunctionCall): any {
     return;
   }

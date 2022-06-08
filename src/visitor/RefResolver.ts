@@ -1,23 +1,25 @@
 
-import { FunctionCall } from "../AstNode/FunctionCall";
-import { FunctionDeclare } from "../AstNode/FunctionDeclare";
-import { Program } from "../AstNode/Program";
-import { isBuiltinFunction, Variable, VariableDeclare } from "../AstNode";
+import { FunctionCall } from "../ast-node/FunctionCall";
+import { FunctionDeclare } from "../ast-node/FunctionDeclare";
+import { Program } from "../ast-node/Program";
+import { isBuiltinFunction, Variable, VariableDeclare } from "../ast-node";
 import { AstVisitor } from "./AstVisitor";
-import { SymbolTable, SymbolType } from "./SymbolTable";
+import { SymbolType } from "./symbol";
+import { Scope } from "./Scope";
+
 
 class RefResolver extends AstVisitor {
   program: Program | null = null;
 
-  symbolTable: SymbolTable;
+  scope: Scope;
 
-  constructor(symbolTable: SymbolTable) {
+  constructor(symbolTable: Scope) {
     super();
-    this.symbolTable = symbolTable;
+    this.scope = symbolTable;
   }
 
   visitFunctionCall(funcCall: FunctionCall) {
-    const symbol = this.symbolTable.getSymbol(funcCall.name);
+    const symbol = this.scope.lookupSymbol(funcCall.name);
 
     if (symbol !== null && symbol.type === SymbolType.Function) {
       funcCall.declare = symbol.decalre as FunctionDeclare;
@@ -29,7 +31,7 @@ class RefResolver extends AstVisitor {
   }
 
   visitVariable(variable: Variable): void {
-    const symbol = this.symbolTable.getSymbol(variable.name);
+    const symbol = this.scope.lookupSymbol(variable.name);
     if (symbol !== null && symbol.type === SymbolType.Variable) {
       variable.declare = symbol.decalre as VariableDeclare;
     } else {

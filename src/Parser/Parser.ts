@@ -1,6 +1,5 @@
-import { throws } from "assert";
 import { BinaryExpression, Block, BooleanLiteral, DecimalLiteral, Expression, FunctionCall, FunctionDeclare, IntegetLiteral, Program, Statement, StringLiteral, Variable, VariableDeclare } from "../AstNode";
-import { Tokenizer, TokenType } from "../Tokenizer/Tokenizer";
+import { Tokenizer, TokenType } from "../Tokenizer";
 import { getPrecedence } from "./utils";
 
 class Parser {
@@ -187,18 +186,9 @@ class Parser {
   }
 
   parseFunctionBody(): Block {
-    const stmts: FunctionCall[] = [];
-
     const token = this.tokenizer.next();
     if (token?.value === "{") {
-      while (this.tokenizer.peek()?.type == TokenType.Identifier) {
-        const functionCall = this.parseFunctionCall();
-        if (functionCall !== null) {
-          stmts.push(functionCall);
-        } else {
-          throw new Error('Error parsing a FunnctionCall in FunctionBody');
-        }
-      }
+      const stmts: Statement[] = this.parseStatementList();
       const token1 = this.tokenizer.next();
       if (token1?.value === '}') {
         return new Block(stmts);

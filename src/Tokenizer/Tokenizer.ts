@@ -16,7 +16,7 @@ class Tokenizer {
     this.stream = stream;
   }
 
-  next(): Token | null {
+  next(): Token {
     const lastToken = this.peek();
     if (this.postToken.type !== TokenType.EOF) {
       this.currToken = this.postToken;
@@ -24,7 +24,7 @@ class Tokenizer {
     } else {
       this.currToken = this.getAToken();
     }
-    this.lastPositon =  lastToken.position
+    this.lastPositon =  lastToken.position;
     return lastToken;
   }
 
@@ -59,7 +59,7 @@ class Tokenizer {
     }
 
     if (isSeperator(char)) {
-      return new Token(TokenType.Seperator, this.stream.next(), pos)
+      return new Token(TokenType.Seperator, this.stream.next(), pos);
     }
 
     if (isDigit(char)) {
