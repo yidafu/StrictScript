@@ -17,11 +17,14 @@ see more in  `examples/`
 ```js
 import { executeCode } from "./src";
 
-const sourceCode = `let name: string = "StrictScript";
+const sourceCode = `
+let name: string = "StrictScript";
 function hello() {
-  println("Hello " + name);
-}`
-
+  let prefix: string = "Hello ";
+  println(prefix + name);
+}
+hello();
+`
 
 executeCode(sourceCode);
 // ==> Hello StrictScript
