@@ -1,3 +1,5 @@
+import { Position } from "./Position";
+
 class InputStream {
   data: string;
 
@@ -28,6 +30,10 @@ class InputStream {
 
   eof(): boolean {
     return this.peek() === '';
+  }
+
+  getPosition(): Position {
+    return new Position(this.position + 1, this.position + 1, this.line, this.column);
   }
 }
 

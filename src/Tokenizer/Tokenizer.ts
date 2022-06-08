@@ -1,30 +1,16 @@
-import { InputStream } from "../InputStream";
+import { InputStream } from "./InputStream";
+import { Position } from "./Position";
+import { Token, TokenType } from "./Token";
 import { isCharacter, isCharacterDigitOrUnderScore, isDigit, isKeyword, isOperator, isSeperator, isWhiteSpace } from "./utils";
 
-export enum TokenType {
-  Keyword = 'keyword',
-  Identifier = 'identifier',
-  StringLiteral = 'string-literal',
-  NullLiteral = 'null-literal',
-  UndefinedLiteral = 'undefined-literal',
-  BooleanLiteral = 'boolean-literal',
-  DecimalLiteral = 'decimal-literal',
-  IntegerLiteral = 'integer-literal',
-  Seperator = 'seperator',
-  Operator = 'operator',
-  EOF = 'eof',
-}
-
-interface Token {
-  type: TokenType;
-  value: string
-}
 
 class Tokenizer {
   stream: InputStream;
 
-  currToken: Token = { type: TokenType.EOF, value: '' };
-  postToken: Token = { type: TokenType.EOF, value: ''};
+  currToken: Token = new Token(TokenType.EOF, '', new Position(0, 0, 0, 0));
+  postToken: Token = new Token(TokenType.EOF, '', new Position(0, 0, 0, 0));
+
+  lastPositon: Position = new Position(0, 0, 0, 0);
 
   constructor(stream: InputStream) {
     this.stream = stream;
@@ -34,15 +20,15 @@ class Tokenizer {
     const lastToken = this.peek();
     if (this.postToken.type !== TokenType.EOF) {
       this.currToken = this.postToken;
-      this.postToken = { type: TokenType.EOF, value: '' };
+      this.postToken = new Token(TokenType.EOF,'', new Position(0, 0, 0,0) );
     } else {
       this.currToken = this.getAToken();
     }
-
+    this.lastPositon =  lastToken.position
     return lastToken;
   }
 
-  peek(): Token | null {
+  peek(): Token {
     if (this.currToken?.type === TokenType.EOF && !this.stream.eof()) {
       this.currToken = this.getAToken();
     }
@@ -59,8 +45,9 @@ class Tokenizer {
 
   getAToken(): Token {
     this.skipWhiteSpaces();
+    const pos = this.stream.getPosition();
     if (this.stream.eof()) {
-      return { type: TokenType.EOF, value: '' };
+      return new Token(TokenType.EOF, '', pos);
     }
     const char = this.stream.peek();
     if (isCharacter(char)) {
@@ -72,10 +59,7 @@ class Tokenizer {
     }
 
     if (isSeperator(char)) {
-      return { 
-        type: TokenType.Seperator,
-        value: this.stream.next(),
-      };
+      return new Token(TokenType.Seperator, this.stream.next(), pos)
     }
 
     if (isDigit(char)) {
@@ -102,9 +86,9 @@ class Tokenizer {
             numberLiteral += this.stream.next();
             char1 = this.stream.peek();
           }
-          return { type: TokenType.DecimalLiteral, value: numberLiteral };
+          return new Token(TokenType.DecimalLiteral, numberLiteral, pos);
         } else {
-          return { type: TokenType.IntegerLiteral, value: numberLiteral };
+          return new Token(TokenType.IntegerLiteral, numberLiteral, pos);
         }
       }
       // can't being execute
@@ -120,17 +104,17 @@ class Tokenizer {
           numberLiteral += this.stream.next();
           char1 = this.stream.next();
         }
-        return { type: TokenType.DecimalLiteral, value: numberLiteral };
+        return new Token(TokenType.DecimalLiteral, numberLiteral, pos);
       } else if (char1 === '.') {
         this.stream.next();
         const char2 = this.stream.peek();
         if (char2 === '.') {
-          return { type: TokenType.Seperator, value: '...' };
+          return new Token(TokenType.Seperator, '...', pos);
         } else {
           throw new Error('Unrecognized patter: ..., missd a . ?');
         }
       } else {
-        return { type: TokenType.Seperator, value: '.' };
+        return new Token(TokenType.Seperator, '.', pos);
       }
     }
 
@@ -148,9 +132,9 @@ class Tokenizer {
           return this.getAToken();
         } else if (char === '=') {
           this.stream.next();
-          return { type: TokenType.Operator, value: '/=' };
+          return new Token(TokenType.Operator, '/=', pos);
         } else {
-          return { type: TokenType.Seperator, value: '/' };
+          return new Token(TokenType.Operator, '/', pos);
         }
       }
     }
@@ -164,9 +148,10 @@ class Tokenizer {
       const char1 = this.stream.peek();
       if (char1 === '=') {
         this.stream.next();
-        return { type: TokenType.Operator, value: '&=' };
+        pos.end = this.stream.position + 1;
+        return new Token(TokenType.Operator, '&=', pos);
       } else {
-        return { type: TokenType.Operator, value: '&' };
+        return new Token(TokenType.Operator, '&', pos);
       }
     }
 
@@ -190,12 +175,14 @@ class Tokenizer {
         const char2 = this.stream.peek();
         if (char2 === '=') {
           this.stream.next();
-          return { type: TokenType.Operator, value: '!==' };
+          pos.renewEnd(this.stream);
+          return new Token(TokenType.Operator, '!==', pos);
         } else {
-          return { type: TokenType.Operator, value: '!=' };
+          pos.renewEnd(this.stream);
+          return new Token(TokenType.Operator, '!=', pos);
         }
       } else {
-        return { type: TokenType.Operator, value: '!' };
+        return new Token(TokenType.Operator, '!', pos);
       }
     }
 
@@ -207,33 +194,38 @@ class Tokenizer {
         const char2 = this.stream.peek();
         if (char2 === '=') {
           this.stream.next();
-          return { type: TokenType.Operator, value: '===' };
+          pos.renewEnd(this.stream);
+          return new Token(TokenType.Operator, '===', pos);
         } else {
-          return { type: TokenType.Operator, value: '===' };
+          pos.renewEnd(this.stream);
+          return new Token(TokenType.Operator, '==', pos);
         }
       } else if (char1 === '>') {
         this.stream.next();
-        return { type: TokenType.Operator, value: '=>' };
+        pos.renewEnd(this.stream);
+        return new Token(TokenType.Operator, '=>', pos);
       } else {
-        return { type: TokenType.Operator, value: '=' };
+        return new Token(TokenType.Operator, '=', pos);
       }
     }
 
     if (char === '~') {
-      return { type: TokenType.Operator, value: char };
+      return new Token(TokenType.Operator, char, pos);
     }
 
     throw new Error(`Unrecongnized pattern meeting: ${char}, at line: ${this.stream.line}, column: ${this.stream.column}`);
   }
 
   parseIdentifier(): Token {
-    const token: Token = { type: TokenType.Identifier, value: '' };
+    const pos = this.stream.getPosition();
+    const token: Token = new Token(TokenType.Identifier, '', pos);
     
     token.value += this.stream.next();
 
     while(!this.stream.eof() && isCharacterDigitOrUnderScore(this.stream.peek())) {
       token.value += this.stream.next();
     }
+    pos.renewEnd(this.stream);
 
     if (isKeyword(token.value)) {
       if (token.value === 'null') {
@@ -248,13 +240,16 @@ class Tokenizer {
   }
 
   parseStringLiteral() {
-    const token: Token = { type: TokenType.StringLiteral, value: '' };
+    const pos = this.stream.getPosition();
+    const token: Token = new Token(TokenType.StringLiteral, '', pos);
 
     this.stream.next();
 
     while(!this.stream.eof() && this.stream.peek() !== '"') {
       token.value += this.stream.next();
     }
+    pos.renewEnd(this.stream);
+
     if (this.stream.peek() === '"') {
       this.stream.next();
       return token;
@@ -263,16 +258,19 @@ class Tokenizer {
   }
 
   parseBinaryOperator(firstChar: string, secondChar: string) {
+    const pos = this.stream.getPosition();
     this.stream.next();
     const char1 = this.stream.peek();
     if (char1 === secondChar) {
       this.stream.next();
-      return { type: TokenType.Operator, value: firstChar + secondChar };
+      pos.end = this.stream.position + 1;
+      return new Token(TokenType.Operator, firstChar + secondChar, pos);
     } else if (char1 === '=') {
       this.stream.next();
-      return { type: TokenType.Operator, value: firstChar + '=' };
+      pos.end = this.stream.position + 1;
+      return new Token(TokenType.Operator, firstChar + '=', pos);
     } else {
-      return { type: TokenType.Operator, value: firstChar };
+      return new Token(TokenType.Operator, firstChar, pos);
     }
   }
 

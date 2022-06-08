@@ -1,5 +1,5 @@
 import { Program } from "./AstNode/Program";
-import { InputStream } from "./InputStream";
+import { InputStream } from "./Tokenizer/InputStream";
 import { Interpreter } from "./Interpreter";
 import { Parser } from "./Parser";
 import { Tokenizer } from "./Tokenizer/Tokenizer";
