@@ -3,14 +3,15 @@ import { FunctionCall } from "../ast-node/FunctionCall";
 import { FunctionDeclare } from "../ast-node/FunctionDeclare";
 import { Program } from "../ast-node/Program";
 import { Block, Variable, VariableDeclare } from "../ast-node";
-import { AstVisitor } from "./AstVisitor";
+
 import { FunctionSymbol, isFunctionSymbol, isVariableSymbol, VariableSymbol } from "./symbol";
 import { Scope } from "./Scope";
 import assert from "assert";
 import { BuiltIn } from "./builtIn";
+import { SemanticAstVisitor } from "./SemanticAstVisitor";
 
 
-class RefResolver extends AstVisitor {
+class RefResolver extends SemanticAstVisitor {
   program: Program | null = null;
 
   scope: Nullable<Scope> = null;

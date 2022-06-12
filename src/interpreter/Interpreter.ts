@@ -3,7 +3,7 @@ import { BinaryExpression, Block, ForStatement, FunctionDeclare, IfStatement, is
 import { AstVisitor } from "../visitor/AstVisitor";
 import { ReturnValue } from "./ReturnValue";
 import { StackFrame } from "./StackFrame";
-import { Symbol, VariableSymbol } from "../visitor";
+import { isVariableSymbol, Symbol, VariableSymbol } from "../visitor";
 import { UnaryExpression } from "../ast-node/UnaryExpression";
 
 class Interpreter extends AstVisitor {
@@ -33,12 +33,12 @@ class Interpreter extends AstVisitor {
   }
 
   visitBlock(block: Block) {
-      let retVal: any;
-      for(const stmt of block.stmts) {
-        retVal = this.visit(stmt);
-      }
+    let retVal: any;
+    for (const stmt of block.stmts) {
+      retVal = this.visit(stmt);
+    }
 
-      return retVal;
+    return retVal;
   }
 
   visitReturnStatement(returnStmt: ReturnStatement): any {
@@ -55,16 +55,16 @@ class Interpreter extends AstVisitor {
   }
 
   visitIfStatement(stmt: IfStatement): void {
-      const conditionValue = this.visit(stmt.condition);
-      if (conditionValue) {
-        for (const statement of stmt.thenStatement) {
-          this.visit(statement);
-        }
-      } else if (stmt.elseStatement !== null) {
-        for (const statement of stmt.elseStatement) {
-          this.visit(statement);
-        }
+    const conditionValue = this.visit(stmt.condition);
+    if (conditionValue) {
+      for (const statement of stmt.thenStatement) {
+        this.visit(statement);
       }
+    } else if (stmt.elseStatement !== null) {
+      for (const statement of stmt.elseStatement) {
+        this.visit(statement);
+      }
+    }
   }
 
   visitForStatement(forStmt: ForStatement): void {
@@ -77,24 +77,24 @@ class Interpreter extends AstVisitor {
       notTerminate = this.visit(forStmt.condition);
     }
 
-     while(notTerminate) {
-       let retVal: any;
-       for (const statement of forStmt.statementList) {
-         retVal = this.visit(statement);
-       }
-       // TODO: return value
-       if (forStmt.increment !== null) {
-         this.visit(forStmt.increment);
-       }
+    while (notTerminate) {
+      let retVal: any;
+      for (const statement of forStmt.statementList) {
+        retVal = this.visit(statement);
+      }
+      // TODO: return value
+      if (forStmt.increment !== null) {
+        this.visit(forStmt.increment);
+      }
 
-       notTerminate = true;
-       if (forStmt.condition !== null) {
-         notTerminate = this.visit(forStmt.condition);
-       }
-     }
+      notTerminate = true;
+      if (forStmt.condition !== null) {
+        notTerminate = this.visit(forStmt.condition);
+      }
+    }
   }
   // eslint-disable-next-line no-unused-vars
-  visitFunctionDeclare(_funcDecl: FunctionDeclare) {}
+  visitFunctionDeclare(_funcDecl: FunctionDeclare) { }
 
   visitFunctionCall(funcCall: FunctionCall) {
     if (funcCall.name === 'println') {
@@ -122,7 +122,7 @@ class Interpreter extends AstVisitor {
           const params = funDecl.callSignature.paramters;
 
           if (params !== null) {
-            for (let idx = 0; idx < params.parameters.length; idx ++) {
+            for (let idx = 0; idx < params.parameters.length; idx++) {
               const varDeclare = params.parameters[idx];
               const paramVal = this.visit(varDeclare);
               frame.setValue(varDeclare.symbol!, paramVal);
@@ -174,103 +174,100 @@ class Interpreter extends AstVisitor {
     return this.currentFrame.setValue(varialbeSymbol, value);
   }
 
-  isLeftValue(value: any): value is LeftValue {
-    return value instanceof LeftValue;
-  }
 
   visitBinary(exp: BinaryExpression): void {
-      let ret: any;
+    let ret: any;
 
-      let valueL = this.visit(exp.expL);
-      let valueR = this.visit(exp.expR);
+    let valueL = this.visit(exp.expL);
+    let valueR = this.visit(exp.expR);
 
-      if (this.isLeftValue(valueL)) {
-         valueL = this.getVariableValue(valueL.variable.symbol);
-      }
-      if (this.isLeftValue(valueR)) {
-        valueR = this.getVariableValue(valueR.variable.symbol);
-      }
-      switch (exp.operator) {
-        case '+':
-          ret = valueL + valueR;
-          break;
-        case '-':
-          ret = valueL - valueR;
-          break;
-        case '*':
-          ret = valueL * valueR;
-          break;
-        case '/':
-          ret = valueL / valueR;
-          break;
-        case '%':
-          ret = valueL % valueR;
-          break;
-        case '>':
-          ret = valueL > valueR;
-          break;
-        case '>=':
-          ret = valueL >= valueR;
-          break;
-        case '<':
-          ret = valueL < valueR;
-          break;
-        case '<=':
-          ret = valueL <= valueR;
-          break;
-        case '&&':
-          ret = valueL + valueR;
-          break;
-        case '||':
-          ret = valueL + valueR;
-          break;
-        case '=':
-          if (valueL !== null) {
-            this.setVariableValue(valueL.variable.name, valueR);
-          } else {
-            throw new Error('Assignment need a lfet value');
-          }
-          break;
-        default:
-          throw new Error(`unsupport binary operator: ${exp.operator}`);
-      }
-      return ret;
+    if (isVariableSymbol(valueL)) {
+      valueL = this.getVariableValue(valueL);
+    }
+    if (isVariableSymbol(valueR)) {
+      valueR = this.getVariableValue(valueR);
+    }
+    switch (exp.operator) {
+      case '+':
+        ret = valueL + valueR;
+        break;
+      case '-':
+        ret = valueL - valueR;
+        break;
+      case '*':
+        ret = valueL * valueR;
+        break;
+      case '/':
+        ret = valueL / valueR;
+        break;
+      case '%':
+        ret = valueL % valueR;
+        break;
+      case '>':
+        ret = valueL > valueR;
+        break;
+      case '>=':
+        ret = valueL >= valueR;
+        break;
+      case '<':
+        ret = valueL < valueR;
+        break;
+      case '<=':
+        ret = valueL <= valueR;
+        break;
+      case '&&':
+        ret = valueL + valueR;
+        break;
+      case '||':
+        ret = valueL + valueR;
+        break;
+      case '=':
+        if (valueL !== null) {
+          this.setVariableValue(valueL.variable.name, valueR);
+        } else {
+          throw new Error('Assignment need a lfet value');
+        }
+        break;
+      default:
+        throw new Error(`unsupport binary operator: ${exp.operator}`);
+    }
+    return ret;
   }
 
   visitUnaryExpression(exp: UnaryExpression): any {
-      const val = this.visit(exp.exp);
+    const val = this.visit(exp.exp);
 
-      switch(exp.operator) {
-        case '++': {
-          const varSymbol: VariableSymbol = val;
-          const value = this.getVariableValue(varSymbol);
-          this.setVariableValue(varSymbol, value + 1);
-          if (exp.ifPrefix) {
-            return value + 1;
-          } else {
-            return value;
-          }
+    switch (exp.operator) {
+      case '++': {
+        const varSymbol: VariableSymbol = val;
+        const value = this.getVariableValue(varSymbol);
+        this.setVariableValue(varSymbol, value + 1);
+        if (exp.ifPrefix) {
+          return value + 1;
+        } else {
+          return value;
         }
-
-        case '--': {
-          const varSymbol: VariableSymbol = val;
-          const value = this.getVariableValue(varSymbol);
-          this.setVariableValue(varSymbol, value - 1);
-          if (exp.ifPrefix) {
-            return value - 1;
-          } else {
-            return value;
-          }
-        }
-        case '+': {
-          return val;
-        }
-        case '-': {
-          return -val;
-        }
-        default:
-          throw new Error(`Unsupported unary operator: ${exp.operator}`);
       }
+
+      case '--': {
+        const varSymbol: VariableSymbol = val;
+        const value = this.getVariableValue(varSymbol);
+        this.setVariableValue(varSymbol, value - 1);
+        if (exp.ifPrefix) {
+          return value - 1;
+        } else {
+          return value;
+        }
+      }
+      case '+': {
+        return val;
+      }
+      case '-': {
+        return -val;
+      }
+      default:
+        throw new Error(`Unsupported unary operator: ${exp.operator}`);
+    }
   }
 }
 

@@ -1,10 +1,9 @@
 import { Block, BuiltinType, FunctionDeclare, FunctionType, Program, Type, Variable, VariableDeclare } from "../ast-node";
-import { AstVisitor } from "./AstVisitor";
 import { FunctionSymbol, VariableSymbol } from "./symbol";
 import { Scope } from "./Scope";
+import { SemanticAstVisitor } from "./SemanticAstVisitor";
 
-
-class Enter extends AstVisitor {
+class Enter extends SemanticAstVisitor {
   scope: Scope;
 
   functionSym?: FunctionSymbol;
