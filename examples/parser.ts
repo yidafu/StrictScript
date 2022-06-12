@@ -1,7 +1,7 @@
-import { Program } from "../src/AstNode";
-import { InputStream } from "../src/InputStream";
-import { Parser } from "../src/Parser";
-import { Tokenizer } from "../src/Tokenizer";
+import { Program } from "../src/ast-node";
+import { InputStream } from "../src/tokenizer";
+import { Parser } from "../src/parser";
+import { Tokenizer } from "../src/tokenizer";
 
 const sourceCodes = ['let a: number = 1 + 2;', 'function foo() {\nbar();\n}'];
 

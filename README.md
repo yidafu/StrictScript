@@ -17,11 +17,19 @@ see more in  `examples/`
 ```js
 import { executeCode } from "./src";
 
-const sourceCode = `let name: string = "StrictScript";
-function hello() {
-  println("Hello " + name);
-}`
+const sourceCode = `
+function printOddNumber(n: number) {
+  for (let idx = 1; idx <= n; idx++) {
+    if (idx % 2 == 1) {
+      println("odd number ==> " + idx);
+    } else {
+      println("skip even number");
+    }
+  }
+}
 
+printOddNumber(10);
+`
 
 executeCode(sourceCode);
 // ==> Hello StrictScript

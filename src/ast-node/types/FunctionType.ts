@@ -1,0 +1,42 @@
+import { TypeVisitor } from "../../visitor";
+import { BuiltinType } from "./BuiltinType";
+import { Type } from './Type';
+import { isUnionType } from "./utils";
+
+class FunctionType extends Type {
+  returnType: Type;
+  parameterTypes: Type[];
+
+  static index = 0;
+  constructor(name: string, parmeterTypes: Type[], returnType: Type = BuiltinType.Void) {
+    super(`@function${typeof name === 'string' ? name : FunctionType.index ++}`);
+    this.parameterTypes = parmeterTypes;
+    this.returnType = returnType;
+  }
+
+  le(type2: Type): boolean {
+    if(type2 == BuiltinType.Any) {
+      return true;
+    } else if (this === type2) {
+      return true;
+    } else if (isUnionType(type2)) {
+      return type2.types.includes(this);
+    } else {
+      return false;
+    }
+  }
+  accept(visitor: TypeVisitor) {
+    return visitor.visitFunctionType(this);
+  }
+
+  hasVoid() {
+    throw this.returnType.hasVoid();
+  }
+
+  toString(): string {
+    return `FunctionType {name: ${this.name}, parameterTypes: ${this.parameterTypes}, returnType: ${this.returnType}}`;
+  }
+
+}
+
+export { FunctionType };
