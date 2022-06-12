@@ -54,13 +54,19 @@ export function isKeyword(str: string): str is KeyWord {
 
 export type Operator = '-' |'+' |'*' |'/' |
   '&' |'^' |'|' |'!' |
-  '>' |'<' | '.'
+  '>' |'<' | '.' | '%'
+
 export const OPERATOR: Operator[] = [
   '-', '+', '*', '/',
   '&', '^', '|', '!',
-  '>', '<', '.'
+  '>', '<', '.', '%'
 ];
 
 export function isOperator(char: string): char is Operator {
   return OPERATOR.includes(char as Operator);
+}
+
+export function isAssignOperator(operator: Operator) {
+  // TODO: &= |= ^= <<= >>=
+  return ['=', '+=', '-=', '/=', '*/'].includes(operator);
 }

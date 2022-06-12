@@ -1,13 +1,13 @@
 import { BinaryExpression, FunctionCall, isFunctionType, Variable } from "../ast-node";
 import { UnaryExpression } from "../ast-node/UnaryExpression";
-import { Operator } from "../tokenizer";
+import { isAssignOperator, Operator } from "../tokenizer";
 import { SemanticAstVisitor } from "./SemanticAstVisitor";
 
 class LeftValueAttributor extends SemanticAstVisitor {
   parentOperator: Nullable<Operator> = null;
 
   visitBinary(exp: BinaryExpression): void {
-      if (exp.operator || exp.operator === '.') {
+    if (isAssignOperator(exp.operator as Operator) || exp.operator === '.') {
         const lastParentOperator = this.parentOperator;
         this.parentOperator = exp.operator as Operator;
 

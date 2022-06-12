@@ -473,7 +473,7 @@ class Parser {
           const openBracketToken = this.tokenizer.peek();
           if (openBracketToken.type === TokenType.Seperator && openBracketToken.value === '{') {
             elseStmts = this.parseIfStatementList();
-            this.tokenizer.next(); // skip { token
+            // this.tokenizer.next(); // skip { token
           } else {
             throw new Error(`Expecting '{' while parsing else block, but we got ${openBracketToken.value} ${this.tokenizer.lastPositon}`);
           }

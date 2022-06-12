@@ -7,6 +7,7 @@ import { Enter } from "./visitor/Enter";
 import { RefResolver } from "./visitor/RefResolver";
 import { Scope } from "./visitor/Scope";
 import { Dumper } from "./visitor/Dumper";
+import { LeftValueAttributor } from "./visitor/LeftValueAttributor";
 
 
 function executeCode(sourceCode: string) {
@@ -16,6 +17,7 @@ function executeCode(sourceCode: string) {
   const globalScope = new Scope();
   new Enter(globalScope).visit(program);
   new RefResolver(globalScope).visit(program);
+  new LeftValueAttributor().visit(program);
 
   const retVal = new Interpreter().visit(program);
   console.log(retVal);

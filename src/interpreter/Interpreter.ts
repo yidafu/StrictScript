@@ -124,7 +124,7 @@ class Interpreter extends AstVisitor {
           if (params !== null) {
             for (let idx = 0; idx < params.parameters.length; idx++) {
               const varDeclare = params.parameters[idx];
-              const paramVal = this.visit(varDeclare);
+              const paramVal = this.visit(funcCall.parameters[idx]);
               frame.setValue(varDeclare.symbol!, paramVal);
             }
           }
@@ -214,6 +214,9 @@ class Interpreter extends AstVisitor {
         break;
       case '<=':
         ret = valueL <= valueR;
+        break;
+      case '==':
+        ret = valueL == valueR;
         break;
       case '&&':
         ret = valueL + valueR;

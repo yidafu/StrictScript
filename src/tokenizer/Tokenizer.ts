@@ -139,7 +139,7 @@ class Tokenizer {
       }
     }
 
-    if (['+', '-', '*', '&', '|'].includes(char)) {
+    if (['+', '-', '*', '&', '|', '%'].includes(char)) {
       return this.parseBinaryOperator(char, char);
     }
 
