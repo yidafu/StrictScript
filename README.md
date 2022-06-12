@@ -18,12 +18,17 @@ see more in  `examples/`
 import { executeCode } from "./src";
 
 const sourceCode = `
-let name: string = "StrictScript";
-function hello() {
-  let prefix: string = "Hello ";
-  println(prefix + name);
+function printOddNumber(n: number) {
+  for (let idx = 1; idx <= n; idx++) {
+    if (idx % 2 == 1) {
+      println("odd number ==> " + idx);
+    } else {
+      println("skip even number");
+    }
+  }
 }
-hello();
+
+printOddNumber(10);
 `
 
 executeCode(sourceCode);
