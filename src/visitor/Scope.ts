@@ -10,6 +10,10 @@ class Scope {
     this.enclosingScope = scope;
   }
 
+  getSymbol(variableName: string) {
+    return this.nameSymbolMap.get(variableName);
+  }
+
   hasSymbol(variableName: string) {
     return this.nameSymbolMap.has(variableName);
   }

@@ -8,8 +8,8 @@ class BinaryExpression extends Expression {
 
   expR: Expression;
 
-  constructor(operator: string, expL: Expression, expR: Expression) {
-    super();
+  constructor(operator: string, expL: Expression, expR: Expression, isErrorNode: boolean = false) {
+    super({ beginPosition: expL.beginPosition, endPosition: expR.endPosition, isErrorNode});
     this.operator = operator;
     this.expL = expL;
     this.expR = expR;

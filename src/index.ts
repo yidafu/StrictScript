@@ -1,11 +1,12 @@
 import { Program } from "./ast-node/Program";
-import { InputStream } from "./tokenizer/InputStream";
-import { Interpreter } from "./Interpreter";
+import { InputStream } from "./tokenizer";
+import { Interpreter } from "./interpreter";
 import { Parser } from "./parser";
 import { Tokenizer } from "./tokenizer/Tokenizer";
 import { Enter } from "./visitor/Enter";
 import { RefResolver } from "./visitor/RefResolver";
 import { Scope } from "./visitor/Scope";
+import { Dumper } from "./visitor/Dumper";
 
 
 function executeCode(sourceCode: string) {
@@ -20,4 +21,14 @@ function executeCode(sourceCode: string) {
   console.log(retVal);
 }
 
-export { executeCode };
+function dumpAst(sourceCode: string) {
+  const tokenizer = new Tokenizer(new InputStream(sourceCode));
+
+  const program: Program = new Parser(tokenizer).parseProgram();
+  new Dumper().visit(program);
+}
+
+export {
+  executeCode,
+  dumpAst,
+};

@@ -1,19 +1,14 @@
-import { AstVisitor } from "../visitor";
-import { AstNode } from "./AstNode";
+import { AstVisitor, FunctionSymbol } from "../visitor";
+import { IAstNodeParameter } from "./AstNode";
 import { Expression } from "./Expression";
-import { FunctionDeclare } from "./FunctionDeclare";
 
-
-class FunctionCall extends AstNode {
-
+class FunctionCall extends Expression {
   name: string;
-
   parameters:  Expression[];
+  symbol: Nullable<FunctionSymbol> = null;
 
-  declare: FunctionDeclare | null = null;
-
-  constructor(name: string, parameters: Expression[]) {
-    super();
+  constructor(name: string, parameters: Expression[], baseParam: IAstNodeParameter) {
+    super(baseParam);
     this.name = name;
     this.parameters = parameters;
   }

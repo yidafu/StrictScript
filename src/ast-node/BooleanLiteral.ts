@@ -1,12 +1,13 @@
 import { AstVisitor } from "../visitor/AstVisitor";
+import { IAstNodeParameter } from "./AstNode";
 import { Expression } from "./Expression";
 
 class BooleanLiteral extends Expression {
 
   value: boolean;
 
-  constructor(value: boolean) {
-    super();
+  constructor(value: boolean, baseParam: IAstNodeParameter) {
+    super(baseParam);
     this.value = value;
   }
 

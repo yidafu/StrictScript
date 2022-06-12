@@ -1,10 +1,12 @@
-import { VariableDeclare } from '../../ast-node';
+import { Type, VariableDeclare } from '../../ast-node';
 import { Symbol, SymbolType } from './Symbol';
 
 class VariableSymbol extends Symbol {
-  variableType: string;
-  constructor(name: string, variableType: string, variableDecalre: VariableDeclare) {
-    super(name,  variableDecalre);
+  variableType: Type;
+  declare: Nullable<VariableDeclare> = null;
+
+  constructor(name: string, variableType: Type) {
+    super(name,  SymbolType.Variable);
     this.type = SymbolType.Variable;
     this.variableType = variableType;
   }

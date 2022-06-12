@@ -1,5 +1,3 @@
-import { Declare } from "../../ast-node";
-
 enum SymbolType {
   Variable = 'variable',
   Function = 'Function',
@@ -13,13 +11,13 @@ class Symbol {
   type: SymbolType;
 
   name: string;
-  decalre: Declare;
+  // decalre: Declare;
 
 
-  constructor(name: string, symDeclare: Declare) {
+  constructor(name: string, symType: SymbolType) {
     this.name = name;
-    this.decalre = symDeclare;
-    this.type = SymbolType.Unkown;
+    // this.decalre = symDeclare;
+    this.type = symType;
   }
 
 

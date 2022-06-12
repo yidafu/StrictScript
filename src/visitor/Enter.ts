@@ -1,12 +1,10 @@
-import { Block, FunctionDeclare, Variable, VariableDeclare } from "../ast-node";
+import { Block, BuiltinType, FunctionDeclare, FunctionType, Program, Type, Variable, VariableDeclare } from "../ast-node";
 import { AstVisitor } from "./AstVisitor";
 import { FunctionSymbol, VariableSymbol } from "./symbol";
 import { Scope } from "./Scope";
 
 
 class Enter extends AstVisitor {
-
-
   scope: Scope;
 
   functionSym?: FunctionSymbol;
@@ -15,15 +13,44 @@ class Enter extends AstVisitor {
     super();
     this.scope = scope;
   }
+  visitProgram(program: Program) {
+    const symbol = new FunctionSymbol('main', new FunctionType('main', [], BuiltinType.Integer));
+    program.symbol = symbol;
+
+    this.functionSym = symbol;
+    return super.visitProgram(program);
+  }
 
   visitFunctionDeclare(funcDecl: FunctionDeclare) {
-    if (this.scope.lookupSymbol(funcDecl.name)) {
-      throw new Error(`Duplicate symbol: ${funcDecl.name}`);
-    }
-    const symbol = new FunctionSymbol(funcDecl.name, funcDecl);
-    this.scope.enter(funcDecl.name, symbol);
+    const currentScope = this.scope;
+    const paramTypes: Type[] = [];
 
-    this.visitBlock(funcDecl.body);
+    if (funcDecl.callSignature.paramters !== null) {
+      for (const parameter of funcDecl.callSignature.paramters.parameters) {
+        paramTypes.push(parameter.variableType);
+      }
+    }
+
+    const symbol = new FunctionSymbol(funcDecl.name, new FunctionType(funcDecl.name, paramTypes));
+    symbol.declare = funcDecl;
+    funcDecl.symbol = symbol;
+
+    if (currentScope.hasSymbol(funcDecl.name)) {
+      throw new Error(`Duplicate symbol: ${funcDecl.name}`);
+    } else {
+      currentScope.enter(funcDecl.name, symbol);
+    }
+
+    const lastFunctionSymbol = this.functionSym;
+    this.functionSym = symbol;
+    const oldScrope = currentScope;
+    this.scope = new Scope(oldScrope);
+    funcDecl.scope = this.scope;
+    super.visitFunctionDeclare(funcDecl);
+
+    this.functionSym = lastFunctionSymbol;
+
+    this.scope = oldScrope;
   }
 
   visitVariable(variable: Variable) {
@@ -36,29 +63,30 @@ class Enter extends AstVisitor {
   }
 
   visitVariableDeclare(variableDeclare: VariableDeclare) {
+    const currentScope = this.scope;
 
-    if (this.scope.hasSymbol(variableDeclare.name)) {
+    if (currentScope.hasSymbol(variableDeclare.name)) {
       throw new Error(`Duplicate symbol: ${variableDeclare.name}`);
     }
 
-    const sym = new VariableSymbol(variableDeclare.name, variableDeclare.variableType, variableDeclare);
+    const sym = new VariableSymbol(variableDeclare.name, variableDeclare.variableType);
+    variableDeclare.symbol = sym;
+    sym.declare = variableDeclare;
+
     this.scope.enter(variableDeclare.name, sym);
 
     this.functionSym?.vars.push(sym);
   }
 
   visitBlock(block: Block) {
-    const currentScope = new Scope(this.scope);
+    const oldScope = this.scope;
+    this.scope = new Scope(oldScope);
 
-    this.scope = currentScope;
+    block.scope = this.scope;
 
     super.visitBlock(block);
 
-    if (this.scope.enclosingScope != null) {
-      this.scope = this.scope.enclosingScope;
-    }
-
-    return currentScope;
+    this.scope = oldScope;
   }
 }
 
