@@ -36,6 +36,9 @@ class Interpreter extends AstVisitor {
     let retVal: any;
     for (const stmt of block.stmts) {
       retVal = this.visit(stmt);
+      if (retVal && ReturnValue.isReturnValue(retVal)) {
+        return retVal;
+      }
     }
 
     return retVal;
@@ -46,12 +49,13 @@ class Interpreter extends AstVisitor {
     if (returnStmt.exp !== null) {
       retVal.setValue(this.visit(returnStmt.exp));
     }
-
+    this.setReturnValue(retVal);
     return retVal;
   }
 
-  setReturnValue() {
+  setReturnValue(retVal: ReturnValue) {
     const frame = this.callStack[this.callStack.length - 2];
+    frame.retVal = retVal;
   }
 
   visitIfStatement(stmt: IfStatement): void {
@@ -99,14 +103,14 @@ class Interpreter extends AstVisitor {
   visitFunctionCall(funcCall: FunctionCall) {
     if (funcCall.name === 'println') {
       if (funcCall.parameters.length > 0) {
-        let retVal;
+        let retVal: ReturnValue | undefined;
         for (const parameter of funcCall.parameters) {
           retVal = this.visit(parameter);
         }
-        if (typeof (retVal as LeftValue).variable === 'object') {
-          retVal = this.getVariableValue((retVal as LeftValue).variable.symbol);
-        }
-        console.log(retVal);
+        // if (retVal && typeof (retVal as LeftValue).variable === 'object') {
+        //   retVal = this.getVariableValue((retVal as LeftValue).variable.symbol);
+        // }
+        console.log(retVal?.value);
       } else {
         console.log(0);
       }

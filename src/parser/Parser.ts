@@ -73,6 +73,8 @@ class Parser {
   parseReturnStatement() {
     const beginPosition = this.tokenizer.peek().position;
     let exp: Nullable<Expression> = null;
+    // eat return token
+    this.tokenizer.next();
 
     const token = this.tokenizer.peek();
     if (token.type !== TokenType.Seperator && token.value !== ';') {
@@ -351,7 +353,7 @@ class Parser {
 
         token = this.tokenizer.peek();
 
-        if (token.type !== TokenType.Seperator && token.value !== ')') {
+        if (token.type === TokenType.Seperator && token.value !== ')') {
           if (token.value === ',') {
             this.tokenizer.next();
             token = this.tokenizer.peek();
@@ -433,7 +435,7 @@ class Parser {
         } else {
           throw new Error(`Expecting parameter in FunctionCall, while we got a ${token2?.value}`);
         }
-        token2 = this.tokenizer.next();
+        token2 = this.tokenizer.peek();
         if (token2?.value !== ')') {
           if (token2?.value === ',') {
             token2 = this.tokenizer.next();
@@ -442,6 +444,8 @@ class Parser {
           }
         }
       }
+      // eat )
+      this.tokenizer.next();
     }
 
 
