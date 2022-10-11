@@ -25,6 +25,10 @@
     "jest": "^28.1.0",
     "ts-jest": "^28.0.2",
     "ts-node": "^10.8.0",
-    "typescript": "4.6.0"
+    "typescript": "4.7.4"
+  },
+  "dependencies": {
+    "@babel/core": "^7.18.5",
+    "@babel/preset-es2015": "^7.0.0-beta.53"
   }
 }

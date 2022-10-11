@@ -60,7 +60,7 @@ abstract class AstVisitor {
 
   visitReturnStatement(returnStmt: ReturnStatement) {
     if (returnStmt.exp !== null) {
-      this.visit(returnStmt);
+      this.visit(returnStmt.exp);
     }
   }
 

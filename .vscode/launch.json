@@ -24,11 +24,11 @@
         // "--loader",
         // "ts-node/esm",
         "-r",
-        "ts-node/register"
+        "ts-node/register",
       ],
       "env": { "TS_NODE_PROJECT": "${workspaceFolder}/tsconfig.json" },
       "args": [
-        "${workspaceFolder}/examples/base.ts"
+        "${file}"
       ]
     }
   ]
