@@ -1,4 +1,4 @@
-import { Position } from "./Position";
+import { Position } from './Position';
 
 enum TokenType {
   Keyword = 'keyword',
@@ -14,13 +14,12 @@ enum TokenType {
   EOF = 'eof',
 }
 
-
 class Token {
   type: TokenType;
 
-  value: string
+  value: string;
 
-  position: Position
+  position: Position;
 
   constructor(type: TokenType, value: string, position: Position) {
     this.type = type;

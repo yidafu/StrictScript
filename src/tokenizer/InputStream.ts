@@ -1,4 +1,4 @@
-import { Position } from "./Position";
+import { Position } from './Position';
 
 class InputStream {
   data: string;
@@ -10,7 +10,7 @@ class InputStream {
   column = 0;
 
   constructor(data: string) {
-    this.data  = data;
+    this.data = data;
   }
 
   peek(): string {
@@ -20,10 +20,10 @@ class InputStream {
   next(): string {
     const char = this.data.charAt(this.position++);
     if (char === '\n') {
-      this.line ++;
+      this.line++;
       this.column = 0;
     } else {
-      this.column ++;
+      this.column++;
     }
     return char;
   }

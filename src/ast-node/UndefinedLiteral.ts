@@ -1,5 +1,6 @@
-import { AstVisitor } from "../visitor";
-import { Expression } from "./Expression";
+import { AstVisitor } from '../visitor';
+
+import { Expression } from './Expression';
 
 class UndefinedLiteral extends Expression {
   value: undefined = undefined;
@@ -8,6 +9,5 @@ class UndefinedLiteral extends Expression {
     return visitor.visitUndefinedLiteral(this);
   }
 }
-
 
 export { UndefinedLiteral };

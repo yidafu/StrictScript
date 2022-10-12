@@ -1,25 +1,10 @@
 module.exports = {
-    "env": {
-        "browser": true,
-        "es6": true
-    },
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/eslint-recommended"
-    ],
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "rules": {
-        "semi": ["error", "always"]
-    }
-};
+  extends: ['@pure-org/eslint-config-water/node'],
+  rules: {
+    'no-param-reassign': 'warn',
+    'class-methods-use-this': 'warn',
+    'no-plusplus': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn'
+  }
+}
+

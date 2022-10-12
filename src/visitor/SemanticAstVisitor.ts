@@ -1,4 +1,4 @@
-import { AstVisitor } from "./AstVisitor";
+import { AstVisitor } from './AstVisitor';
 
 class SemanticAstVisitor extends AstVisitor {
 

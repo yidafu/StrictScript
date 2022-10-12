@@ -1,5 +1,6 @@
-import { AstVisitor } from "../visitor";
-import { Expression } from "./Expression";
+import { AstVisitor } from '../visitor';
+
+import { Expression } from './Expression';
 
 class NullLiteral extends Expression {
   value: null = null;
@@ -8,6 +9,5 @@ class NullLiteral extends Expression {
     return visitor.visitNullLiteral(this);
   }
 }
-
 
 export { NullLiteral };

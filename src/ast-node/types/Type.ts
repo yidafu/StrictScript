@@ -1,4 +1,4 @@
-import { TypeVisitor } from "../../visitor";
+import { TypeVisitor } from '../../visitor';
 
 export abstract class Type {
   name: string;

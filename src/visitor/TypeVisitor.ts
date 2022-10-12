@@ -1,4 +1,6 @@
-import { FunctionType, SimpleType, Type, UnionType } from "../ast-node";
+import {
+  FunctionType, SimpleType, Type, UnionType,
+} from '../ast-node';
 
 abstract class TypeVisitor {
   visit(type: Type) {

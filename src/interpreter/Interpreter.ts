@@ -1,10 +1,25 @@
-import { FunctionCall } from "../ast-node/FunctionCall";
-import { BinaryExpression, Block, ForStatement, FunctionDeclare, IfStatement, isFunctionDeclare, ReturnStatement, Variable, VariableDeclare } from "../ast-node";
-import { AstVisitor } from "../visitor/AstVisitor";
-import { ReturnValue } from "./ReturnValue";
-import { StackFrame } from "./StackFrame";
-import { isVariableSymbol, Symbol, VariableSymbol } from "../visitor";
-import { UnaryExpression } from "../ast-node/UnaryExpression";
+import {
+  BinaryExpression,
+  Block,
+  ForStatement,
+  FunctionDeclare,
+  IfStatement,
+  isFunctionDeclare,
+  ReturnStatement,
+  Variable,
+  VariableDeclare,
+} from '../ast-node';
+import { FunctionCall } from '../ast-node/FunctionCall';
+import { UnaryExpression } from '../ast-node/UnaryExpression';
+import {
+  isVariableSymbol,
+  Symbol,
+  VariableSymbol,
+} from '../visitor';
+import { AstVisitor } from '../visitor/AstVisitor';
+
+import { ReturnValue } from './ReturnValue';
+import { StackFrame } from './StackFrame';
 
 class Interpreter extends AstVisitor {
   values: Map<string, any> = new Map();
@@ -97,6 +112,7 @@ class Interpreter extends AstVisitor {
       }
     }
   }
+
   // eslint-disable-next-line no-unused-vars
   visitFunctionDeclare(_funcDecl: FunctionDeclare) { }
 
@@ -115,43 +131,40 @@ class Interpreter extends AstVisitor {
         console.log(0);
       }
       return 0;
-    } else {
+    }
 
-      if (funcCall.symbol !== null) {
-        this.currentFrame.retVal = undefined;
-        const frame = new StackFrame();
+    if (funcCall.symbol !== null) {
+      this.currentFrame.retVal = undefined;
+      const frame = new StackFrame();
 
-        const funDecl = funcCall.symbol.declare;
-        if (funDecl && isFunctionDeclare(funDecl)) {
-          const params = funDecl.callSignature.paramters;
+      const funDecl = funcCall.symbol.declare;
+      if (funDecl && isFunctionDeclare(funDecl)) {
+        const params = funDecl.callSignature.paramters;
 
-          if (params !== null) {
-            for (let idx = 0; idx < params.parameters.length; idx++) {
-              const varDeclare = params.parameters[idx];
-              const paramVal = this.visit(funcCall.parameters[idx]);
-              frame.setValue(varDeclare.symbol!, paramVal);
-            }
+        if (params !== null) {
+          for (let idx = 0; idx < params.parameters.length; idx++) {
+            const varDeclare = params.parameters[idx];
+            const paramVal = this.visit(funcCall.parameters[idx]);
+            frame.setValue(varDeclare.symbol!, paramVal);
           }
-
-          this.pushFrame(frame);
-
-          this.visit(funDecl.body);
-
-          this.popFrame();
-
-          return this.currentFrame.retVal;
         }
 
-      } else {
-        throw new Error(`Runtime error, canot find declaration of ${funcCall.name}`);
+        this.pushFrame(frame);
+
+        this.visit(funDecl.body);
+
+        this.popFrame();
+
+        return this.currentFrame.retVal;
       }
+    } else {
+      throw new Error(`Runtime error, canot find declaration of ${funcCall.name}`);
     }
   }
 
   visitVariableDeclare(variableDeclare: VariableDeclare) {
     if (variableDeclare.init !== null) {
       const val = this.visit(variableDeclare.init);
-
 
       this.setVariableValue(variableDeclare.symbol!, val);
       return val;
@@ -161,23 +174,20 @@ class Interpreter extends AstVisitor {
   visitVariable(variable: Variable) {
     if (variable.isLeftValue) {
       return variable.symbol;
-    } else {
-      return this.getVariableValue(variable.symbol);
     }
+    return this.getVariableValue(variable.symbol);
   }
 
   getVariableValue(varSymbol?: Symbol) {
     if (varSymbol) {
       return this.currentFrame.getValue(varSymbol);
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 
   setVariableValue(varialbeSymbol: Symbol, value: any) {
     return this.currentFrame.setValue(varialbeSymbol, value);
   }
-
 
   visitBinary(exp: BinaryExpression): void {
     let ret: any;
@@ -220,7 +230,7 @@ class Interpreter extends AstVisitor {
         ret = valueL <= valueR;
         break;
       case '==':
-        ret = valueL == valueR;
+        ret = valueL === valueR;
         break;
       case '&&':
         ret = valueL + valueR;
@@ -251,9 +261,8 @@ class Interpreter extends AstVisitor {
         this.setVariableValue(varSymbol, value + 1);
         if (exp.ifPrefix) {
           return value + 1;
-        } else {
-          return value;
         }
+        return value;
       }
 
       case '--': {
@@ -262,9 +271,8 @@ class Interpreter extends AstVisitor {
         this.setVariableValue(varSymbol, value - 1);
         if (exp.ifPrefix) {
           return value - 1;
-        } else {
-          return value;
         }
+        return value;
       }
       case '+': {
         return val;
@@ -275,14 +283,6 @@ class Interpreter extends AstVisitor {
       default:
         throw new Error(`Unsupported unary operator: ${exp.operator}`);
     }
-  }
-}
-
-class LeftValue {
-  variable: Variable;
-
-  constructor(variable: Variable) {
-    this.variable = variable;
   }
 }
 

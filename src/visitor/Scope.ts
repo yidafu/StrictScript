@@ -1,12 +1,11 @@
 import { Symbol } from './symbol';
 
 class Scope {
-
   nameSymbolMap: Map<string, Symbol> = new Map();
 
   enclosingScope: Scope | null = null;
 
-  constructor(scope: Scope | null  = null) {
+  constructor(scope: Scope | null = null) {
     this.enclosingScope = scope;
   }
 

@@ -1,6 +1,6 @@
-import { FunctionCall } from "./FunctionCall";
-import { FunctionDeclare } from "./FunctionDeclare";
-import { Statement } from "./Statement";
+import { FunctionCall } from './FunctionCall';
+import { FunctionDeclare } from './FunctionDeclare';
+import { Statement } from './Statement';
 
 export function isFunctionDeclare(stmt: Statement): stmt is FunctionDeclare {
   if (stmt instanceof FunctionDeclare) {

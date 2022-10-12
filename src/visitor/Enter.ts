@@ -1,7 +1,10 @@
-import { Block, BuiltinType, FunctionDeclare, FunctionType, Program, Type, Variable, VariableDeclare } from "../ast-node";
-import { FunctionSymbol, VariableSymbol } from "./symbol";
-import { Scope } from "./Scope";
-import { SemanticAstVisitor } from "./SemanticAstVisitor";
+import {
+  Block, BuiltinType, FunctionDeclare, FunctionType, Program, Type, Variable, VariableDeclare,
+} from '../ast-node';
+
+import { Scope } from './Scope';
+import { SemanticAstVisitor } from './SemanticAstVisitor';
+import { FunctionSymbol, VariableSymbol } from './symbol';
 
 class Enter extends SemanticAstVisitor {
   scope: Scope;
@@ -12,6 +15,7 @@ class Enter extends SemanticAstVisitor {
     super();
     this.scope = scope;
   }
+
   visitProgram(program: Program) {
     const symbol = new FunctionSymbol('main', new FunctionType('main', [], BuiltinType.Integer));
     program.symbol = symbol;

@@ -1,8 +1,29 @@
-import { BinaryExpression, Block, BooleanLiteral, BuiltinType, CallSignature, DecimalLiteral, Expression, ExpressionStatement, ForStatement, FunctionCall, FunctionDeclare, IfStatement, IntegetLiteral, ParameterList, Program, ReturnStatement, Statement, StringLiteral, Variable, VariableDeclare } from "../ast-node";
-import { UnaryExpression } from "../ast-node/UnaryExpression";
-import { Operator, Tokenizer, TokenType } from "../tokenizer";
-import { getPrecedence } from "./utils";
+import {
+  BinaryExpression,
+  Block,
+  BooleanLiteral,
+  BuiltinType,
+  CallSignature,
+  DecimalLiteral,
+  Expression,
+  ExpressionStatement,
+  ForStatement,
+  FunctionCall,
+  FunctionDeclare,
+  IfStatement,
+  IntegetLiteral,
+  ParameterList,
+  Program,
+  ReturnStatement,
+  Statement,
+  StringLiteral,
+  Variable,
+  VariableDeclare,
+} from '../ast-node';
+import { UnaryExpression } from '../ast-node/UnaryExpression';
+import { Operator, Tokenizer, TokenType } from '../tokenizer';
 
+import { getPrecedence } from './utils';
 
 class Parser {
   tokenizer: Tokenizer;
@@ -27,7 +48,7 @@ class Parser {
       if (stmt !== null) {
         stmts.push(stmt);
       } else {
-        throw new Error('Unrecognize Token: ' + token);
+        throw new Error(`Unrecognize Token: ${token}`);
       }
 
       token = this.tokenizer.peek();
@@ -88,7 +109,9 @@ class Parser {
       throw new Error(`Expecting ';' after return stateent. ${this.tokenizer.lastPositon}`);
     }
 
-    return new ReturnStatement(exp, { beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false });
+    return new ReturnStatement(exp, {
+      beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
+    });
   }
 
   parseVariableDeclare() {
@@ -123,12 +146,12 @@ class Parser {
       if (semicolonToken?.type === TokenType.Seperator && semicolonToken.value === ';') {
         this.tokenizer.next();
         return new VariableDeclare(variableName, this.parseType(variableType), initExpression, {
-          beginPosition
-          , endPosition: this.tokenizer.lastPositon, isErrorNode: false
+          beginPosition,
+          endPosition: this.tokenizer.lastPositon,
+          isErrorNode: false,
         });
-      } else {
-        throw new Error(`Expecting ; at the end of variable declaretion, while we meet ${semicolonToken?.value}`);
       }
+      throw new Error(`Expecting ; at the end of variable declaretion, while we meet ${semicolonToken?.value}`);
     } else {
       throw new Error(`Expecting variable name in variable declaretion, but we meet ${token?.value}`);
     }
@@ -156,6 +179,7 @@ class Parser {
         return BuiltinType.Any;
     }
   }
+
   parseExpression(): Expression {
     return this.parseAssignment();
   }
@@ -172,7 +196,7 @@ class Parser {
 
     const operatorStack: Operator[] = [];
 
-    while (token.type === TokenType.Operator && tPrec == assignPrec) {
+    while (token.type === TokenType.Operator && tPrec === assignPrec) {
       operatorStack.push(token.value as Operator);
       this.tokenizer.next();
       const exp = this.parseBinaryExpression(assignPrec);
@@ -222,17 +246,19 @@ class Parser {
     if (token.type === TokenType.Operator) {
       this.tokenizer.next();
       const exp = this.parseUnaryExpression();
-      return new UnaryExpression(token.value as Operator, exp, true, { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } else {
-      const exp = this.parsePrimary();
-      const token = this.tokenizer.peek();
-      if (token.type === TokenType.Operator && (token.value === '--' || token.value === '++')) {
-        this.tokenizer.next();
-        return new UnaryExpression(token.value as Operator, exp, false, { beginPosition, endPosition: this.tokenizer.lastPositon });
-      } else {
-        return exp;
-      }
+      return new UnaryExpression(token.value as Operator, exp, true, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
     }
+    const exp = this.parsePrimary();
+    const token1 = this.tokenizer.peek();
+    if (token1.type === TokenType.Operator && (token1.value === '--' || token1.value === '++')) {
+      this.tokenizer.next();
+      return new UnaryExpression(token1.value as Operator, exp, false, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    }
+    return exp;
   }
 
   parsePrimary(): Expression {
@@ -241,32 +267,36 @@ class Parser {
     if (token?.type === TokenType.Identifier) {
       if (this.tokenizer.peek2().value === '(') {
         return this.parseFunctionCall();
-      } else {
-        this.tokenizer.next();
-        return new Variable(token.value, { beginPosition, endPosition: this.tokenizer.lastPositon });
       }
-    } else if (token?.type === TokenType.IntegerLiteral) {
       this.tokenizer.next();
-      return new IntegetLiteral(parseInt(token.value), { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } else if (token?.type === TokenType.DecimalLiteral) {
+      return new Variable(token.value, { beginPosition, endPosition: this.tokenizer.lastPositon });
+    } if (token?.type === TokenType.IntegerLiteral) {
       this.tokenizer.next();
-      return new DecimalLiteral(parseFloat(token.value), { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } else if (token?.type === TokenType.StringLiteral) {
+      return new IntegetLiteral(parseInt(token.value, 10), {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    } if (token?.type === TokenType.DecimalLiteral) {
       this.tokenizer.next();
-      return new StringLiteral(token.value, { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } else if (token?.type === TokenType.BooleanLiteral) {
+      return new DecimalLiteral(parseFloat(token.value), {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    } if (token?.type === TokenType.StringLiteral) {
+      this.tokenizer.next();
+      return new StringLiteral(token.value, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    } if (token?.type === TokenType.BooleanLiteral) {
       this.tokenizer.next();
       return new BooleanLiteral(token.value === 'true', { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } else if (token?.type === TokenType.Seperator && token.value === '(') {
+    } if (token?.type === TokenType.Seperator && token.value === '(') {
       this.tokenizer.next();
       const exp = this.parseExpression();
       const closeParenthesisToken = this.tokenizer.peek();
       if (closeParenthesisToken?.type === TokenType.Seperator && closeParenthesisToken.value === ')') {
         this.tokenizer.next();
         return exp;
-      } else {
-        throw new Error(`Expecting a ')' ad the end of a primary expression, but we got a ${token.value}`);
       }
+      throw new Error(`Expecting a ')' ad the end of a primary expression, but we got a ${token.value}`);
     } else {
       throw new Error(`cannot recognize a primary expression starting with: ${token?.value}`);
     }
@@ -280,20 +310,19 @@ class Parser {
     if (token?.type === TokenType.Identifier) {
       const token1 = this.tokenizer.peek();
       if (token1?.value === '(') {
-
         const callSignature: CallSignature = this.parseCallSignature();
 
         const openBraceToken = this.tokenizer.peek();
         if (openBraceToken.type === TokenType.Seperator && openBraceToken.value === '{') {
           const functionBody = this.parseBlock();
           return new FunctionDeclare(token.value, callSignature, functionBody, {
-            beginPosition
-            , endPosition: this.tokenizer.lastPositon, isErrorNode: false
+            beginPosition,
+            endPosition: this.tokenizer.lastPositon,
+            isErrorNode: false,
           });
-
-        } else {
-          throw new Error(`Expecting '{' in Function Declare, while we got a ${openBraceToken.value} ${this.tokenizer.lastPositon}`);
         }
+        throw new Error(`Expecting '{' in Function Declare, while we got a ${openBraceToken.value} ${this.tokenizer.lastPositon}`);
+
         // if (token2?.value === ')') {
 
         // } else {
@@ -302,11 +331,9 @@ class Parser {
       } else {
         throw new Error(`Expecting ')' in FunctionDeclare, while we got a ${token.value}`);
       }
-
     } else {
       throw new Error(`Expecting a function name, while we got a ${token?.value}`);
     }
-
   }
 
   parseCallSignature() {
@@ -328,10 +355,11 @@ class Parser {
         returnType = this.parseTypeAnnotation();
       }
 
-      return new CallSignature(parameterList, this.parseType(returnType), { beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false });
-    } else {
-      throw new Error(`Expecting a ')' after a call signature ${this.tokenizer.lastPositon}`);
+      return new CallSignature(parameterList, this.parseType(returnType), {
+        beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
+      });
     }
+    throw new Error(`Expecting a ')' after a call signature ${this.tokenizer.lastPositon}`);
   }
 
   parseParameterList() {
@@ -348,7 +376,9 @@ class Parser {
           varType = this.parseTypeAnnotation();
         }
         parameterList.push(
-          new VariableDeclare(token.value, this.parseType(varType), null, { beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false }),
+          new VariableDeclare(token.value, this.parseType(varType), null, {
+            beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
+          }),
         );
 
         token = this.tokenizer.peek();
@@ -360,14 +390,15 @@ class Parser {
           } else {
             throw new Error(`Expecting a ',', or ')' after a parameter ${this.tokenizer.lastPositon}`);
           }
-
         }
       } else {
         throw new Error(`Expecting an indentifier as name of a parameter ${this.tokenizer.lastPositon}`);
       }
     }
 
-    return new ParameterList(parameterList, { beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false });
+    return new ParameterList(parameterList, {
+      beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
+    });
   }
 
   parseTypeAnnotation() {
@@ -398,15 +429,16 @@ class Parser {
     if (closeBrace.type === TokenType.Seperator && closeBrace.value === '}') {
       this.tokenizer.next();
       return new Block(stmts, { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } else {
-      throw new Error(`Expecting '}' while parsing a block, but we got a ${closeBrace.value} ${this.tokenizer.lastPositon}`);
     }
+    throw new Error(`Expecting '}' while parsing a block, but we got a ${closeBrace.value} ${this.tokenizer.lastPositon}`);
   }
 
   parseExpressionStatement() {
     const beginPosition = this.tokenizer.peek().position;
     const exp = this.parseExpression();
-    const stmt = new ExpressionStatement(exp, { beginPosition, endPosition: this.tokenizer.lastPositon });
+    const stmt = new ExpressionStatement(exp, {
+      beginPosition, endPosition: this.tokenizer.lastPositon,
+    });
 
     const semiToken = this.tokenizer.peek();
     if (semiToken.type === TokenType.Seperator && semiToken.value === ';') {
@@ -448,8 +480,9 @@ class Parser {
       this.tokenizer.next();
     }
 
-
-    return new FunctionCall(token.value, params, { beginPosition, endPosition: this.tokenizer.lastPositon });
+    return new FunctionCall(token.value, params, {
+      beginPosition, endPosition: this.tokenizer.lastPositon,
+    });
     // token2 = this.tokenizer.next();
     // if (token2?.value === ';') {
     // } else {
@@ -483,10 +516,11 @@ class Parser {
           }
         }
 
-        return new IfStatement(condition, thenStmts, elseStmts, { beginPosition, endPosition: this.tokenizer.lastPositon });
-      } else {
-        throw new Error(`Expecting ')' at the end of if condition, but we got ${closeParenToken.value} ${this.tokenizer.lastPositon}`);
+        return new IfStatement(condition, thenStmts, elseStmts, {
+          beginPosition, endPosition: this.tokenizer.lastPositon,
+        });
       }
+      throw new Error(`Expecting ')' at the end of if condition, but we got ${closeParenToken.value} ${this.tokenizer.lastPositon}`);
     } else {
       throw new Error(`Expecting '(' after if keyword, but we got ${openParenToken.value} ${this.tokenizer.lastPositon}`);
     }
@@ -501,9 +535,8 @@ class Parser {
       if (closeBraceToken.type === TokenType.Seperator && closeBraceToken.value === '}') {
         this.tokenizer.next(); // skio } token
         return thenStmts;
-      } else {
-        throw new Error(`Expecting '{' while parsing if block, but we got ${openBracketToken.value} ${this.tokenizer.lastPositon}`);
       }
+      throw new Error(`Expecting '{' while parsing if block, but we got ${openBracketToken.value} ${this.tokenizer.lastPositon}`);
     } else {
       throw new Error(`Expecting '}' while parsing if block, but we got ${openBracketToken.value} ${this.tokenizer.lastPositon}`);
     }
@@ -531,10 +564,11 @@ class Parser {
           const closeBraceToken = this.tokenizer.peek();
           if (closeBraceToken.type === TokenType.Seperator && closeBraceToken.value === '}') {
             this.tokenizer.next(); // skio } token
-            return new ForStatement(initExp, conditionExp, incrementExp, stmts, null, { beginPosition, endPosition: this.tokenizer.lastPositon });
-          } else {
-            throw new Error(`Expecting '{' while parsing for block, but we got ${openBracketToken.value} ${this.tokenizer.lastPositon}`);
+            return new ForStatement(initExp, conditionExp, incrementExp, stmts, null, {
+              beginPosition, endPosition: this.tokenizer.lastPositon,
+            });
           }
+          throw new Error(`Expecting '{' while parsing for block, but we got ${openBracketToken.value} ${this.tokenizer.lastPositon}`);
         } else {
           throw new Error(`Expecting '}' while parsing for block, but we got ${openBracketToken.value} ${this.tokenizer.lastPositon}`);
         }
@@ -553,9 +587,8 @@ class Parser {
     if (token.type !== TokenType.Seperator && token.value !== ';') {
       if (token.type === TokenType.Keyword && token.value === 'let') {
         return this.parseVariableDeclare();
-      } else {
-        expression = this.parseExpression();
       }
+      expression = this.parseExpression();
     }
     const semiToken = this.tokenizer.peek();
     if (semiToken.type === TokenType.Seperator && (semiToken.value === ';' || semiToken.value === ')')) {
@@ -563,10 +596,8 @@ class Parser {
         this.tokenizer.next();
       }
       return expression;
-    } else {
-      throw new Error(`Expecting ';' while pareing for expression, but we got ${semiToken.value} ${this.tokenizer.lastPositon}`);
     }
-
+    throw new Error(`Expecting ';' while pareing for expression, but we got ${semiToken.value} ${this.tokenizer.lastPositon}`);
   }
 }
 

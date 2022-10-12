@@ -1,8 +1,8 @@
-import { AstVisitor, FunctionSymbol } from "../visitor";
-import { Block } from "./Block";
+import { AstVisitor, FunctionSymbol } from '../visitor';
+
+import { Block } from './Block';
 
 class Program extends Block {
-
   symbol: FunctionSymbol | null = null;
 
   accept(visitor: AstVisitor) {

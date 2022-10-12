@@ -1,10 +1,9 @@
 import {
-  InputStream
-} from "../src/tokenizer";
-import {
+  InputStream,
+
   Tokenizer,
-  TokenType
-} from "../src/tokenizer";
+  TokenType,
+} from '../src/tokenizer';
 
 import testCase from './tokenizer-case.json';
 
@@ -18,12 +17,10 @@ function getAllTokens(sourceCode: string) {
   return results;
 }
 describe('InputStream', () => {
-
-  testCase.forEach(cases => {
+  testCase.forEach((cases) => {
     test(cases.name, () => {
       const tokens = getAllTokens(cases.sourceCode);
       expect(tokens).toEqual(cases.tokens);
     });
   });
-
 });

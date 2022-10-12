@@ -2,9 +2,8 @@ export function isWhiteSpace(char: string): boolean {
   return [' ', '\n', '\t'].includes(char);
 }
 
-
 export function isCharacter(char: string) {
-  return ((char>='A' && char <='Z') || (char>= 'a' && char <='z'));
+  return ((char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z'));
 }
 
 export function isDigit(char: string) {
@@ -52,14 +51,14 @@ export function isKeyword(str: string): str is KeyWord {
   return KEY_WORDS.has(str as any);
 }
 
-export type Operator = '-' |'+' |'*' |'/' |
-  '&' |'^' |'|' |'!' |
-  '>' |'<' | '.' | '%'
+export type Operator = '-' | '+' | '*' | '/' |
+'&' | '^' | '|' | '!' |
+'>' | '<' | '.' | '%';
 
 export const OPERATOR: Operator[] = [
   '-', '+', '*', '/',
   '&', '^', '|', '!',
-  '>', '<', '.', '%'
+  '>', '<', '.', '%',
 ];
 
 export function isOperator(char: string): char is Operator {

@@ -1,4 +1,4 @@
-import { AstNode, IAstNodeParameter } from "./AstNode";
+import { AstNode, IAstNodeParameter } from './AstNode';
 
 abstract class Declare extends AstNode {
   name: string;

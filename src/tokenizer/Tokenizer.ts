@@ -1,13 +1,21 @@
-import { InputStream } from "./InputStream";
-import { Position } from "./Position";
-import { Token, TokenType } from "./Token";
-import { isCharacter, isCharacterDigitOrUnderScore, isDigit, isKeyword, isOperator, isSeperator, isWhiteSpace } from "./utils";
-
+import { InputStream } from './InputStream';
+import { Position } from './Position';
+import { Token, TokenType } from './Token';
+import {
+  isCharacter,
+  isCharacterDigitOrUnderScore,
+  isDigit,
+  isKeyword,
+  isOperator,
+  isSeperator,
+  isWhiteSpace,
+} from './utils';
 
 class Tokenizer {
   stream: InputStream;
 
   currToken: Token = new Token(TokenType.EOF, '', new Position(0, 0, 0, 0));
+
   postToken: Token = new Token(TokenType.EOF, '', new Position(0, 0, 0, 0));
 
   lastPositon: Position = new Position(0, 0, 0, 0);
@@ -20,11 +28,11 @@ class Tokenizer {
     const lastToken = this.peek();
     if (this.postToken.type !== TokenType.EOF) {
       this.currToken = this.postToken;
-      this.postToken = new Token(TokenType.EOF,'', new Position(0, 0, 0,0) );
+      this.postToken = new Token(TokenType.EOF, '', new Position(0, 0, 0, 0));
     } else {
       this.currToken = this.getAToken();
     }
-    this.lastPositon =  lastToken.position;
+    this.lastPositon = lastToken.position;
     return lastToken;
   }
 
@@ -41,7 +49,6 @@ class Tokenizer {
     }
     return this.postToken;
   }
-
 
   getAToken(): Token {
     this.skipWhiteSpaces();
@@ -82,14 +89,13 @@ class Tokenizer {
         if (char1 === '.') {
           numberLiteral += this.stream.next();
           char1 = this.stream.peek();
-          while(isDigit(char1)) {
+          while (isDigit(char1)) {
             numberLiteral += this.stream.next();
             char1 = this.stream.peek();
           }
           return new Token(TokenType.DecimalLiteral, numberLiteral, pos);
-        } else {
-          return new Token(TokenType.IntegerLiteral, numberLiteral, pos);
         }
+        return new Token(TokenType.IntegerLiteral, numberLiteral, pos);
       }
       // can't being execute
       throw new Error(`Unrecongnized pattern meeting: ${char}, at line: ${this.stream.line} col: ${this.stream.column}`);
@@ -105,14 +111,13 @@ class Tokenizer {
           char1 = this.stream.next();
         }
         return new Token(TokenType.DecimalLiteral, numberLiteral, pos);
-      } else if (char1 === '.') {
+      } if (char1 === '.') {
         this.stream.next();
         const char2 = this.stream.peek();
         if (char2 === '.') {
           return new Token(TokenType.Seperator, '...', pos);
-        } else {
-          throw new Error('Unrecognized patter: ..., missd a . ?');
         }
+        throw new Error('Unrecognized patter: ..., missd a . ?');
       } else {
         return new Token(TokenType.Seperator, '.', pos);
       }
@@ -126,16 +131,15 @@ class Tokenizer {
           this.stream.next();
           this.skipMultipleLineComment();
           return this.getAToken();
-        } else if (char === '/') {
+        } if (char === '/') {
           this.stream.next();
           this.skipSingleLineComment();
           return this.getAToken();
-        } else if (char === '=') {
+        } if (char === '=') {
           this.stream.next();
           return new Token(TokenType.Operator, '/=', pos);
-        } else {
-          return new Token(TokenType.Operator, '/', pos);
         }
+        return new Token(TokenType.Operator, '/', pos);
       }
     }
 
@@ -150,9 +154,8 @@ class Tokenizer {
         this.stream.next();
         pos.end = this.stream.position + 1;
         return new Token(TokenType.Operator, '&=', pos);
-      } else {
-        return new Token(TokenType.Operator, '&', pos);
       }
+      return new Token(TokenType.Operator, '&', pos);
     }
 
     if (char === '>') {
@@ -177,13 +180,11 @@ class Tokenizer {
           this.stream.next();
           pos.renewEnd(this.stream);
           return new Token(TokenType.Operator, '!==', pos);
-        } else {
-          pos.renewEnd(this.stream);
-          return new Token(TokenType.Operator, '!=', pos);
         }
-      } else {
-        return new Token(TokenType.Operator, '!', pos);
+        pos.renewEnd(this.stream);
+        return new Token(TokenType.Operator, '!=', pos);
       }
+      return new Token(TokenType.Operator, '!', pos);
     }
 
     if (char === '=') {
@@ -196,17 +197,15 @@ class Tokenizer {
           this.stream.next();
           pos.renewEnd(this.stream);
           return new Token(TokenType.Operator, '===', pos);
-        } else {
-          pos.renewEnd(this.stream);
-          return new Token(TokenType.Operator, '==', pos);
         }
-      } else if (char1 === '>') {
+        pos.renewEnd(this.stream);
+        return new Token(TokenType.Operator, '==', pos);
+      } if (char1 === '>') {
         this.stream.next();
         pos.renewEnd(this.stream);
         return new Token(TokenType.Operator, '=>', pos);
-      } else {
-        return new Token(TokenType.Operator, '=', pos);
       }
+      return new Token(TokenType.Operator, '=', pos);
     }
 
     if (char === '~') {
@@ -219,17 +218,17 @@ class Tokenizer {
   parseIdentifier(): Token {
     const pos = this.stream.getPosition();
     const token: Token = new Token(TokenType.Identifier, '', pos);
-    
+
     token.value += this.stream.next();
 
-    while(!this.stream.eof() && isCharacterDigitOrUnderScore(this.stream.peek())) {
+    while (!this.stream.eof() && isCharacterDigitOrUnderScore(this.stream.peek())) {
       token.value += this.stream.next();
     }
     pos.renewEnd(this.stream);
 
     if (isKeyword(token.value)) {
       if (token.value === 'null') {
-        token.type == TokenType.NullLiteral;
+        token.type = TokenType.NullLiteral;
       } else if (token.value === 'true' || token.value === 'false') {
         token.type = TokenType.BooleanLiteral;
       } else {
@@ -245,7 +244,7 @@ class Tokenizer {
 
     this.stream.next();
 
-    while(!this.stream.eof() && this.stream.peek() !== '"') {
+    while (!this.stream.eof() && this.stream.peek() !== '"') {
       token.value += this.stream.next();
     }
     pos.renewEnd(this.stream);
@@ -265,21 +264,20 @@ class Tokenizer {
       this.stream.next();
       pos.end = this.stream.position + 1;
       return new Token(TokenType.Operator, firstChar + secondChar, pos);
-    } else if (char1 === '=') {
+    } if (char1 === '=') {
       this.stream.next();
       pos.end = this.stream.position + 1;
-      return new Token(TokenType.Operator, firstChar + '=', pos);
-    } else {
-      return new Token(TokenType.Operator, firstChar, pos);
+      return new Token(TokenType.Operator, `${firstChar}=`, pos);
     }
+    return new Token(TokenType.Operator, firstChar, pos);
   }
 
   skipMultipleLineComment(): void {
-    if(!this.stream.eof()) {
+    if (!this.stream.eof()) {
       let char1 = this.stream.next();
-      while(!this.stream.eof()) {
+      while (!this.stream.eof()) {
         const char2 = this.stream.next();
-        if(char1 === '*' && char2 === '/') {
+        if (char1 === '*' && char2 === '/') {
           return;
         }
         char1 = char2;
@@ -288,7 +286,7 @@ class Tokenizer {
   }
 
   skipSingleLineComment() {
-    while(!this.stream.eof() && this.stream.peek() !== '\n') {
+    while (!this.stream.eof() && this.stream.peek() !== '\n') {
       this.stream.next();
     }
   }

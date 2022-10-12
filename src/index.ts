@@ -1,14 +1,13 @@
-import { Program } from "./ast-node/Program";
-import { InputStream } from "./tokenizer";
-import { Interpreter } from "./interpreter";
-import { Parser } from "./parser";
-import { Tokenizer } from "./tokenizer/Tokenizer";
-import { Enter } from "./visitor/Enter";
-import { RefResolver } from "./visitor/RefResolver";
-import { Scope } from "./visitor/Scope";
-import { Dumper } from "./visitor/Dumper";
-import { LeftValueAttributor } from "./visitor/LeftValueAttributor";
-
+import { Program } from './ast-node/Program';
+import { Interpreter } from './interpreter';
+import { Parser } from './parser';
+import { InputStream } from './tokenizer';
+import { Tokenizer } from './tokenizer/Tokenizer';
+import { Dumper } from './visitor/Dumper';
+import { Enter } from './visitor/Enter';
+import { LeftValueAttributor } from './visitor/LeftValueAttributor';
+import { RefResolver } from './visitor/RefResolver';
+import { Scope } from './visitor/Scope';
 
 function executeCode(sourceCode: string) {
   const tokenizer = new Tokenizer(new InputStream(sourceCode));
