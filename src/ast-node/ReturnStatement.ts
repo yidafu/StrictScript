@@ -1,7 +1,8 @@
-import { AstVisitor } from "../visitor";
-import { IAstNodeParameter } from "./AstNode";
-import { Expression } from "./Expression";
-import { Statement } from "./Statement";
+import { AstVisitor } from '../visitor';
+
+import { IAstNodeParameter } from './AstNode';
+import { Expression } from './Expression';
+import { Statement } from './Statement';
 
 class ReturnStatement extends Statement {
   exp: Nullable<Expression> = null;
@@ -12,7 +13,7 @@ class ReturnStatement extends Statement {
   }
 
   public accept(visitor: AstVisitor) {
-      return visitor.visitReturnStatement(this);
+    return visitor.visitReturnStatement(this);
   }
 }
 

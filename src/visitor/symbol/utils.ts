@@ -1,6 +1,6 @@
-import { FunctionSymbol } from "./FunctionSymbol";
-import { Symbol } from "./Symbol";
-import { VariableSymbol } from "./VariableSymbol";
+import { FunctionSymbol } from './FunctionSymbol';
+import { Symbol } from './Symbol';
+import { VariableSymbol } from './VariableSymbol';
 
 export function isFunctionSymbol(symbol: Symbol): symbol is FunctionSymbol {
   return symbol instanceof FunctionSymbol;

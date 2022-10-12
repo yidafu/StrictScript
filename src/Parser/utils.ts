@@ -1,4 +1,3 @@
-
 const OPERATOR_PRECEDENCE = new Map<string, number>([
   ['=', 2],
   ['+=', 2],

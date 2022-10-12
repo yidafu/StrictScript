@@ -1,14 +1,19 @@
-import { AstVisitor, Scope } from "../visitor";
-import { IAstNodeParameter } from "./AstNode";
-import { Expression } from "./Expression";
-import { Statement } from "./Statement";
-import { VariableDeclare } from "./VariableDeclare";
+import { AstVisitor, Scope } from '../visitor';
+
+import { IAstNodeParameter } from './AstNode';
+import { Expression } from './Expression';
+import { Statement } from './Statement';
+import { VariableDeclare } from './VariableDeclare';
 
 class ForStatement extends Statement {
   init: Nullable<Expression | VariableDeclare>;
+
   condition: Nullable<Expression>;
+
   increment: Nullable<Expression>;
+
   statementList: Statement[];
+
   scope: Nullable<Scope>;
 
   constructor(init: Nullable<Expression | VariableDeclare>, condition: Nullable<Expression>, increment: Nullable<Expression>, statementList: Statement[], scope: Nullable<Scope>, baseParam: IAstNodeParameter) {

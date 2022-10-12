@@ -1,6 +1,7 @@
-import { AstVisitor } from "../visitor";
-import { IAstNodeParameter } from "./AstNode";
-import { Expression } from "./Expression";
+import { AstVisitor } from '../visitor';
+
+import { IAstNodeParameter } from './AstNode';
+import { Expression } from './Expression';
 
 class DecimalLiteral extends Expression {
   value: number;
@@ -14,6 +15,5 @@ class DecimalLiteral extends Expression {
     return visitor.visitDecimalLiteral(this);
   }
 }
-
 
 export { DecimalLiteral };

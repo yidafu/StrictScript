@@ -1,5 +1,5 @@
-import { Position } from "../tokenizer";
-import { AstVisitor } from "../visitor/AstVisitor";
+import { Position } from '../tokenizer';
+import { AstVisitor } from '../visitor/AstVisitor';
 
 interface IAstNodeParameter {
   beginPosition: Position;
@@ -9,7 +9,9 @@ interface IAstNodeParameter {
 
 abstract class AstNode {
   beginPosition: Position;
+
   endPosition: Position;
+
   isErrorNode: boolean;
 
   constructor(parameter: IAstNodeParameter) {

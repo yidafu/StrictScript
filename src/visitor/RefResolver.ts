@@ -1,15 +1,16 @@
+import assert from 'assert';
 
-import { FunctionCall } from "../ast-node/FunctionCall";
-import { FunctionDeclare } from "../ast-node/FunctionDeclare";
-import { Program } from "../ast-node/Program";
-import { Block, Variable, VariableDeclare } from "../ast-node";
+import { Block, Variable, VariableDeclare } from '../ast-node';
+import { FunctionCall } from '../ast-node/FunctionCall';
+import { FunctionDeclare } from '../ast-node/FunctionDeclare';
+import { Program } from '../ast-node/Program';
 
-import { FunctionSymbol, isFunctionSymbol, isVariableSymbol, VariableSymbol } from "./symbol";
-import { Scope } from "./Scope";
-import assert from "assert";
-import { BuiltIn } from "./builtIn";
-import { SemanticAstVisitor } from "./SemanticAstVisitor";
-
+import { Scope } from './Scope';
+import { SemanticAstVisitor } from './SemanticAstVisitor';
+import { BuiltIn } from './builtIn';
+import {
+  FunctionSymbol, isFunctionSymbol, isVariableSymbol, VariableSymbol,
+} from './symbol';
 
 class RefResolver extends SemanticAstVisitor {
   program: Program | null = null;
@@ -47,7 +48,7 @@ class RefResolver extends SemanticAstVisitor {
       if (symbol !== null && isFunctionSymbol(symbol)) {
         funcCall.symbol = symbol;
       } else {
-        throw new Error(`Expecting a FunctionSymbol`);
+        throw new Error('Expecting a FunctionSymbol');
       }
     }
 
@@ -67,8 +68,6 @@ class RefResolver extends SemanticAstVisitor {
 
     this.scope = oldScope;
   }
-
-
 
   visitVariableDeclare(variableDeclare: VariableDeclare): void {
     const currentScope = this.scope;
@@ -92,8 +91,6 @@ class RefResolver extends SemanticAstVisitor {
       throw new Error(`Variable: ${variable.name} is used before declaration`);
     }
   }
-
-
 }
 
 export { RefResolver };

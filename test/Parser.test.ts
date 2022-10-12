@@ -1,12 +1,12 @@
 import {
-  InputStream
-} from "../src/tokenizer/InputStream";
+  Parser,
+} from '../src/parser';
 import {
-  Parser
-} from "../src/parser";
+  Tokenizer,
+} from '../src/tokenizer';
 import {
-  Tokenizer
-} from "../src/tokenizer";
+  InputStream,
+} from '../src/tokenizer/InputStream';
 
 function parse(str: string) {
   const parser = new Parser(new Tokenizer(new InputStream(str)));
@@ -21,23 +21,23 @@ function hello() {
 }
 hello();`);
     expect(ast).toEqual({
-      "stmts": [{
-          "body": {
-            "stmts": [{
-              "definition": null,
-              "name": "println",
-              "parameters": [
-                "hello World!",
-              ],
-            }, ],
-          },
-          "name": "hello",
+      stmts: [{
+        body: {
+          stmts: [{
+            definition: null,
+            name: 'println',
+            parameters: [
+              'hello World!',
+            ],
+          }],
         },
-        {
-          "definition": null,
-          "name": "hello",
-          "parameters": [],
-        },
+        name: 'hello',
+      },
+      {
+        definition: null,
+        name: 'hello',
+        parameters: [],
+      },
       ],
     });
   });

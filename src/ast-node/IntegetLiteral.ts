@@ -1,6 +1,7 @@
-import { AstVisitor } from "../visitor";
-import { IAstNodeParameter } from "./AstNode";
-import { Expression } from "./Expression";
+import { AstVisitor } from '../visitor';
+
+import { IAstNodeParameter } from './AstNode';
+import { Expression } from './Expression';
 
 class IntegetLiteral extends Expression {
   value: number;
@@ -9,6 +10,7 @@ class IntegetLiteral extends Expression {
     super(baseParam);
     this.value = value;
   }
+
   public accept(visitor: AstVisitor) {
     return visitor.visitIntegerLiteral(this);
   }

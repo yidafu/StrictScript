@@ -1,10 +1,13 @@
-import { AstVisitor, FunctionSymbol } from "../visitor";
-import { IAstNodeParameter } from "./AstNode";
-import { Expression } from "./Expression";
+import { AstVisitor, FunctionSymbol } from '../visitor';
+
+import { IAstNodeParameter } from './AstNode';
+import { Expression } from './Expression';
 
 class FunctionCall extends Expression {
   name: string;
-  parameters:  Expression[];
+
+  parameters: Expression[];
+
   symbol: Nullable<FunctionSymbol> = null;
 
   constructor(name: string, parameters: Expression[], baseParam: IAstNodeParameter) {

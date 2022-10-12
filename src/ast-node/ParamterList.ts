@@ -1,6 +1,7 @@
-import { AstVisitor } from "../visitor";
-import { AstNode, IAstNodeParameter } from "./AstNode";
-import { VariableDeclare } from "./VariableDeclare";
+import { AstVisitor } from '../visitor';
+
+import { AstNode, IAstNodeParameter } from './AstNode';
+import { VariableDeclare } from './VariableDeclare';
 
 class ParameterList extends AstNode {
   parameters: VariableDeclare[];
@@ -11,7 +12,7 @@ class ParameterList extends AstNode {
   }
 
   public accept(visitor: AstVisitor) {
-      return visitor.visitParameterList(this);
+    return visitor.visitParameterList(this);
   }
 }
 

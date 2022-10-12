@@ -1,7 +1,8 @@
-import { AstVisitor } from "../visitor";
-import { IAstNodeParameter } from "./AstNode";
-import { Expression } from "./Expression";
-import { Statement } from "./Statement";
+import { AstVisitor } from '../visitor';
+
+import { IAstNodeParameter } from './AstNode';
+import { Expression } from './Expression';
+import { Statement } from './Statement';
 
 class ExpressionStatement extends Statement {
   exp: Expression;

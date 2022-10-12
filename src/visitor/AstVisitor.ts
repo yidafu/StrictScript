@@ -1,8 +1,10 @@
-import { FunctionCall } from "../ast-node/FunctionCall";
-import { FunctionDeclare } from "../ast-node/FunctionDeclare";
-import { Program } from "../ast-node/Program";
-import { AstNode, BinaryExpression, BooleanLiteral, CallSignature, DecimalLiteral, ExpressionStatement, ForStatement, IfStatement, IntegetLiteral, NullLiteral, ParameterList, ReturnStatement, StringLiteral, UndefinedLiteral, VariableDeclare, VariableStatement, Block, Variable, ErrorExpression, ErrorStatement } from "../ast-node";
-import { UnaryExpression } from "../ast-node/UnaryExpression";
+import {
+  AstNode, BinaryExpression, BooleanLiteral, CallSignature, DecimalLiteral, ExpressionStatement, ForStatement, IfStatement, IntegetLiteral, NullLiteral, ParameterList, ReturnStatement, StringLiteral, UndefinedLiteral, VariableDeclare, VariableStatement, Block, Variable, ErrorExpression, ErrorStatement,
+} from '../ast-node';
+import { FunctionCall } from '../ast-node/FunctionCall';
+import { FunctionDeclare } from '../ast-node/FunctionDeclare';
+import { Program } from '../ast-node/Program';
+import { UnaryExpression } from '../ast-node/UnaryExpression';
 
 abstract class AstVisitor {
   visit(node: AstNode) {
@@ -126,7 +128,6 @@ abstract class AstVisitor {
 
   // eslint-disable-next-line no-unused-vars
   visitVariable(_variable: Variable): any {
-
     return undefined;
   }
 
@@ -135,17 +136,16 @@ abstract class AstVisitor {
     for (const parm of funcCall.parameters) {
       this.visit(parm);
     }
-    return;
   }
 
   // eslint-disable-next-line no-unused-vars
   visitErrorExpression(errExp: ErrorExpression) {
-    return;
+
   }
 
   // eslint-disable-next-line no-unused-vars
   visitErrorStatement(errStmt: ErrorStatement) {
-    return;
+
   }
 }
 

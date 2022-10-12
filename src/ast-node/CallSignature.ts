@@ -1,11 +1,12 @@
+import { AstVisitor } from '../visitor';
 
-import { AstVisitor } from "../visitor";
-import { AstNode, IAstNodeParameter } from "./AstNode";
-import { ParameterList } from "./ParamterList";
-import { Type } from "./types";
+import { AstNode, IAstNodeParameter } from './AstNode';
+import { ParameterList } from './ParamterList';
+import { Type } from './types';
 
 class CallSignature extends AstNode {
   paramters: Nullable<ParameterList>;
+
   returnType: Type;
 
   constructor(paramters: Nullable<ParameterList>, returnType: Type, baseParam: IAstNodeParameter) {

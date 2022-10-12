@@ -19,7 +19,7 @@ export { IfStatement } from './IfStatement';
 export { ForStatement } from './ForStatement';
 
 export { BooleanLiteral } from './BooleanLiteral';
-export { StringLiteral} from './StringLiteral';
+export { StringLiteral } from './StringLiteral';
 export { NullLiteral } from './NullLiteral';
 export { IntegetLiteral } from './IntegetLiteral';
 export { DecimalLiteral } from './DecimalLiteral';

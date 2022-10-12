@@ -1,9 +1,11 @@
-import { AstVisitor, Scope } from "../visitor";
-import { AstNode, IAstNodeParameter } from "./AstNode";
-import { Statement } from "./Statement";
+import { AstVisitor, Scope } from '../visitor';
+
+import { AstNode, IAstNodeParameter } from './AstNode';
+import { Statement } from './Statement';
 
 class Block extends AstNode {
   stmts: Statement[];
+
   scope: Nullable<Scope> = null;
 
   constructor(stmts: Statement[], baseParam: IAstNodeParameter) {

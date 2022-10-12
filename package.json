@@ -4,7 +4,8 @@
   "description": "Typescript subset Implement.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -17,12 +18,17 @@
   },
   "homepage": "https://github.com/yidafu/StrictScript#readme",
   "devDependencies": {
+    "@pure-org/cli": "^0.2.8",
+    "@pure-org/eslint-config-water": "^0.2.8",
+    "@pure-org/water-plugin-lint": "^0.2.8",
     "@types/jest": "^27.5.1",
     "@types/node": "^17.0.36",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
     "eslint": "^8.16.0",
+    "husky": "^8.0.1",
     "jest": "^28.1.0",
+    "lint-staged": "^13.0.3",
     "ts-jest": "^28.0.2",
     "ts-node": "^10.8.0",
     "typescript": "4.7.4"
@@ -30,5 +36,8 @@
   "dependencies": {
     "@babel/core": "^7.18.5",
     "@babel/preset-es2015": "^7.0.0-beta.53"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "pure lint"
   }
 }
