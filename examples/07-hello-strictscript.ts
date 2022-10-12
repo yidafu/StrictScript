@@ -1,4 +1,4 @@
-import { executeCode } from "../src";
+import { executeCode } from '../src';
 
 executeCode(`
 let name: string = "StrictScript";

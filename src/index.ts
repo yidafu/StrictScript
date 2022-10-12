@@ -11,14 +11,28 @@ import { Scope } from './visitor/Scope';
 
 function executeCode(sourceCode: string) {
   const tokenizer = new Tokenizer(new InputStream(sourceCode));
-
+  console.time('解析代码');
   const program: Program = new Parser(tokenizer).parseProgram();
+  console.timeEnd('解析代码');
   const globalScope = new Scope();
-  new Enter(globalScope).visit(program);
-  new RefResolver(globalScope).visit(program);
-  new LeftValueAttributor().visit(program);
 
+  console.time('建立符号表');
+  new Enter(globalScope).visit(program);
+  console.timeEnd('建立符号表');
+  console.time('解引用');
+  new RefResolver(globalScope).visit(program);
+  console.timeEnd('解引用');
+  console.time('消除左值');
+  new LeftValueAttributor().visit(program);
+  console.timeEnd('消除左值');
+
+  console.log();
+  console.log();
+  console.time('解释执行');
   const retVal = new Interpreter().visit(program);
+  console.log();
+  console.log();
+  console.timeEnd('解释执行');
   console.log(retVal);
 }
 

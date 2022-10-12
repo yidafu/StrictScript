@@ -1,4 +1,4 @@
-import { executeCode } from "../src";
+import { executeCode } from '../src';
 
 declare global {
   type Nullable<T> = T | null;

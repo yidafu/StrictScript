@@ -1,10 +1,10 @@
-import { dumpAst } from "../src";
+import { dumpAst } from '../src';
 
 declare global {
   type Nullable<T> = T | null;
 }
 
-dumpAst(`let name: string = "1234";`);
+dumpAst('let name: string = "1234";');
 
 dumpAst(`function echo(name: string): void {
   let msg: string = "hello " + name;

@@ -192,8 +192,8 @@ class Interpreter extends AstVisitor {
   visitBinary(exp: BinaryExpression): void {
     let ret: any;
 
-    let valueL = this.visit(exp.expL);
-    let valueR = this.visit(exp.expR);
+    const valueL = this.visit(exp.expL);
+    const valueR = this.visit(exp.expR);
 
     // if (isVariableSymbol(valueL)) {
     //   valueL = this.getVariableValue(valueL);

@@ -1,4 +1,4 @@
-import { executeCode, dumpAst } from "../src";
+import { executeCode, dumpAst } from '../src';
 
 /// <reference path="../src/global.d.ts" />
 
