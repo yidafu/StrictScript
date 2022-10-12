@@ -20,6 +20,9 @@ import {
   ErrorExpression,
   ErrorStatement,
 } from '../ast-node';
+import { ClassBody } from '../ast-node/ClassBody';
+import { ClassDeclare } from '../ast-node/ClassDeclare';
+import { ConstructorDeclare } from '../ast-node/ConstructorDeclare';
 import { FunctionCall } from '../ast-node/FunctionCall';
 import { FunctionDeclare } from '../ast-node/FunctionDeclare';
 import { Program } from '../ast-node/Program';
@@ -164,6 +167,18 @@ abstract class AstVisitor {
 
   // eslint-disable-next-line no-unused-vars
   visitErrorStatement(errStmt: ErrorStatement) {
+
+  }
+
+  visitClassDeclare(classDeclare: ClassDeclare) {
+
+  }
+
+  visitClassBody(classBobdy: ClassBody) {
+
+  }
+
+  visitConstructorDeclare(constructorDeclare: ConstructorDeclare) {
 
   }
 }

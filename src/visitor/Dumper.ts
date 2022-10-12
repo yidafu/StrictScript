@@ -22,6 +22,9 @@ import {
   VariableDeclare,
   VariableStatement,
 } from '../ast-node';
+import { ClassBody } from '../ast-node/ClassBody';
+import { ClassDeclare } from '../ast-node/ClassDeclare';
+import { ConstructorDeclare } from '../ast-node/ConstructorDeclare';
 import { UnaryExpression } from '../ast-node/UnaryExpression';
 
 import { AstVisitor } from './AstVisitor';
@@ -180,6 +183,35 @@ class Dumper extends AstVisitor {
   // eslint-disable-next-line no-unused-vars
   visitErrorStatement(_errStmt: ErrorStatement): string {
     return 'ErrorStatement\n';
+  }
+
+  visitClassDeclare(classDeclare: ClassDeclare) {
+    let output = `ClassDeclare: ${classDeclare.name}\n`;
+    if (classDeclare.supperClass) {
+      output += `${addPrefixPadding(`Extends ${classDeclare.supperClass}`)}\n`;
+    }
+    output += `${addPrefixPadding(`${this.visit(classDeclare.classBobdy)}`)}\n`;
+    return output;
+  }
+
+  visitClassBody(classBobdy: ClassBody) {
+    let output = 'ClassBody:\n';
+    if (classBobdy.constructorDeclare) {
+      output += `${addPrefixPadding(this.visit(classBobdy.constructorDeclare))}\n`;
+    }
+
+    for (const propertyDeclare of classBobdy.propertyDeclares) {
+      output += `${addPrefixPadding(this.visit(propertyDeclare))}\n`;
+    }
+    for (const methodDeclare of classBobdy.methodDeclares) {
+      output += `${addPrefixPadding(this.visit(methodDeclare))}\n`;
+    }
+    return output;
+  }
+
+  visitConstructorDeclare(constructorDeclare: ConstructorDeclare) {
+    return `ConstructorDeclare: ${constructorDeclare.name}\n${addPrefixPadding(this.visit(constructorDeclare.callSignature))
+    }\n${addPrefixPadding(this.visit(constructorDeclare.body))}`;
   }
 }
 

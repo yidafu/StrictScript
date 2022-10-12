@@ -20,8 +20,13 @@ import {
   Variable,
   VariableDeclare,
 } from '../ast-node';
+import { ClassBody } from '../ast-node/ClassBody';
+import { ClassDeclare } from '../ast-node/ClassDeclare';
+import { ConstructorDeclare } from '../ast-node/ConstructorDeclare';
 import { UnaryExpression } from '../ast-node/UnaryExpression';
-import { Operator, Tokenizer, TokenType } from '../tokenizer';
+import {
+  Operator, Position, Tokenizer, TokenType,
+} from '../tokenizer';
 
 import { getPrecedence } from './utils';
 
@@ -77,6 +82,9 @@ class Parser {
       if (token.value === 'for') {
         return this.parseForStatement();
       }
+      if (token.value === 'class') {
+        return this.parseClassDeclare();
+      }
       throw new Error(`Not support keyword ${token.value}`);
     } else if (token !== null && (
       token.type === TokenType.Identifier
@@ -117,7 +125,10 @@ class Parser {
   parseVariableDeclare() {
     const beginPosition = this.tokenizer.peek().position;
     this.tokenizer.next();
+    return this.parseVariableDeclareWithoutDeclarator(beginPosition);
+  }
 
+  parseVariableDeclareWithoutDeclarator(beginPosition: Position) {
     const token = this.tokenizer.next();
     if (token?.type === TokenType.Identifier) {
       const variableName = token.value;
@@ -305,7 +316,10 @@ class Parser {
   parseFunctionDeclare(): FunctionDeclare {
     const beginPosition = this.tokenizer.peek().position;
     this.tokenizer.next();
+    return this.parseMethodDeclare(beginPosition);
+  }
 
+  parseMethodDeclare(beginPosition: Position) {
     const token = this.tokenizer.next();
     if (token?.type === TokenType.Identifier) {
       const token1 = this.tokenizer.peek();
@@ -598,6 +612,98 @@ class Parser {
       return expression;
     }
     throw new Error(`Expecting ';' while pareing for expression, but we got ${semiToken.value} ${this.tokenizer.lastPositon}`);
+  }
+
+  parseClassDeclare() {
+    const beginPosition = this.tokenizer.peek().position;
+    // eat class keyword
+    this.tokenizer.next();
+    const token = this.tokenizer.peek();
+    let className = '';
+    if (token.type === TokenType.Identifier) {
+      className = token.value;
+      this.tokenizer.next();
+    }
+    let superClass: Nullable<string> = null;
+    const token2 = this.tokenizer.peek();
+    if (token2.type === TokenType.Keyword && token2.value === 'extends') {
+      this.tokenizer.next(); // eat extends keyword
+      const superClassToken = this.tokenizer.peek();
+      if (superClassToken.type === TokenType.Identifier) {
+        superClass = superClassToken.value;
+        this.tokenizer.next();
+      } else {
+        throw new Error(`Expecting a indetifier after extends keyword, but we got ${superClassToken.value} ${this.tokenizer.lastPositon}`);
+      }
+    }
+    const openBraceToken = this.tokenizer.peek();
+    if (openBraceToken.type === TokenType.Seperator && openBraceToken.value === '{') {
+      const classBody = this.parseClassBody();
+      return new ClassDeclare(className, superClass, classBody, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    }
+    throw new Error(`Expecting Class body start with '{', but we got ${openBraceToken.value} ${this.tokenizer.lastPositon}`);
+  }
+
+  parseClassBody(): ClassBody {
+    const topBeginPosition = this.tokenizer.peek().position;
+    this.tokenizer.next(); // eat {
+    const beginPosition = this.tokenizer.peek().position;
+    let token = this.tokenizer.peek();
+    let constructorDeclare: Nullable<ConstructorDeclare> = null;
+    const propertyDeclares: VariableDeclare[] = [];
+    const methodDeclares: FunctionDeclare[] = [];
+    while (
+      (token.type === TokenType.Keyword && token.value === 'constructor')
+      || (token.type === TokenType.Identifier)
+    ) {
+      if (token.type === TokenType.Keyword && token.value === 'constructor') {
+        constructorDeclare = this.parseConstructorDeclare();
+      } else if (token.type === TokenType.Identifier) {
+        // 分两种情况：属性和方法
+        const token1 = this.tokenizer.peek2();
+        if (token1.type === TokenType.Seperator && token1.value === '(') { // 方法
+          const methodDeclare = this.parseMethodDeclare(beginPosition);
+          methodDeclares.push(methodDeclare);
+        } else { // 属性
+          const propertyDeclare = this.parseVariableDeclareWithoutDeclarator(beginPosition);
+          propertyDeclares.push(propertyDeclare);
+        }
+      }
+      token = this.tokenizer.peek();
+    }
+
+    const closeBraceToken = this.tokenizer.peek();
+    if (closeBraceToken.type === TokenType.Seperator && closeBraceToken.value === '}') {
+      return new ClassBody(constructorDeclare, methodDeclares, propertyDeclares, {
+        beginPosition: topBeginPosition,
+        endPosition: this.tokenizer.lastPositon,
+      });
+    }
+    throw new Error(`Expection Class Body endwith '}', but wo got ${closeBraceToken.value} ${this.tokenizer.lastPositon}`);
+  }
+
+  parseConstructorDeclare(): ConstructorDeclare {
+    const beginPosition = this.tokenizer.peek().position;
+    this.tokenizer.next(); // eat constructor keyword
+    const token = this.tokenizer.peek();
+    const token1 = this.tokenizer.peek();
+    if (token1.type === TokenType.Seperator && token1.value === '(') {
+      const callSignature = this.parseCallSignature();
+      const openBraceToken = this.tokenizer.peek();
+      if (openBraceToken.type === TokenType.Seperator && openBraceToken.value === '{') {
+        const functionBody = this.parseBlock();
+        return new ConstructorDeclare(token.value, callSignature, functionBody, {
+          beginPosition,
+          endPosition: this.tokenizer.lastPositon,
+          isErrorNode: false,
+        });
+      }
+      throw new Error(`Expecting '{' in Constructor Declare, while we got a ${openBraceToken.value} ${this.tokenizer.lastPositon}`);
+    } else {
+      throw new Error(`Expecting ')' in Constructor Declare, while we got a ${token.value}`);
+    }
   }
 }
 
