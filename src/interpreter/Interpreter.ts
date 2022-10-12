@@ -126,7 +126,7 @@ class Interpreter extends AstVisitor {
         // if (retVal && typeof (retVal as LeftValue).variable === 'object') {
         //   retVal = this.getVariableValue((retVal as LeftValue).variable.symbol);
         // }
-        console.log(retVal?.value);
+        console.log(retVal);
       } else {
         console.log(0);
       }
@@ -155,7 +155,7 @@ class Interpreter extends AstVisitor {
 
         this.popFrame();
 
-        return this.currentFrame.retVal;
+        return this.currentFrame.retVal.value;
       }
     } else {
       throw new Error(`Runtime error, canot find declaration of ${funcCall.name}`);
@@ -195,12 +195,12 @@ class Interpreter extends AstVisitor {
     let valueL = this.visit(exp.expL);
     let valueR = this.visit(exp.expR);
 
-    if (isVariableSymbol(valueL)) {
-      valueL = this.getVariableValue(valueL);
-    }
-    if (isVariableSymbol(valueR)) {
-      valueR = this.getVariableValue(valueR);
-    }
+    // if (isVariableSymbol(valueL)) {
+    //   valueL = this.getVariableValue(valueL);
+    // }
+    // if (isVariableSymbol(valueR)) {
+    //   valueR = this.getVariableValue(valueR);
+    // }
     switch (exp.operator) {
       case '+':
         ret = valueL + valueR;
@@ -239,8 +239,8 @@ class Interpreter extends AstVisitor {
         ret = valueL + valueR;
         break;
       case '=':
-        if (valueL !== null) {
-          this.setVariableValue(valueL.variable.name, valueR);
+        if (valueL instanceof VariableSymbol) {
+          this.setVariableValue(valueL, valueR);
         } else {
           throw new Error('Assignment need a lfet value');
         }
