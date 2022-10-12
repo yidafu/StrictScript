@@ -1,9 +1,21 @@
 import {
-  BinaryExpression, Block, ForStatement, FunctionDeclare, IfStatement, isFunctionDeclare, ReturnStatement, Variable, VariableDeclare,
+  BinaryExpression,
+  Block,
+  ForStatement,
+  FunctionDeclare,
+  IfStatement,
+  isFunctionDeclare,
+  ReturnStatement,
+  Variable,
+  VariableDeclare,
 } from '../ast-node';
 import { FunctionCall } from '../ast-node/FunctionCall';
 import { UnaryExpression } from '../ast-node/UnaryExpression';
-import { isVariableSymbol, Symbol, VariableSymbol } from '../visitor';
+import {
+  isVariableSymbol,
+  Symbol,
+  VariableSymbol,
+} from '../visitor';
 import { AstVisitor } from '../visitor/AstVisitor';
 
 import { ReturnValue } from './ReturnValue';
@@ -218,7 +230,7 @@ class Interpreter extends AstVisitor {
         ret = valueL <= valueR;
         break;
       case '==':
-        ret = valueL == valueR;
+        ret = valueL === valueR;
         break;
       case '&&':
         ret = valueL + valueR;
@@ -271,14 +283,6 @@ class Interpreter extends AstVisitor {
       default:
         throw new Error(`Unsupported unary operator: ${exp.operator}`);
     }
-  }
-}
-
-class LeftValue {
-  variable: Variable;
-
-  constructor(variable: Variable) {
-    this.variable = variable;
   }
 }
 

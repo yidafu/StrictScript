@@ -11,7 +11,12 @@ class UnaryExpression extends Expression {
 
   ifPrefix: boolean;
 
-  constructor(operator: Operator, exp: Expression, isPrefix: boolean, baseParam: IAstNodeParameter) {
+  constructor(
+    operator: Operator,
+    exp: Expression,
+    isPrefix: boolean,
+    baseParam: IAstNodeParameter,
+  ) {
     super(baseParam);
     this.operator = operator;
     this.exp = exp;

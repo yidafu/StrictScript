@@ -16,7 +16,14 @@ class ForStatement extends Statement {
 
   scope: Nullable<Scope>;
 
-  constructor(init: Nullable<Expression | VariableDeclare>, condition: Nullable<Expression>, increment: Nullable<Expression>, statementList: Statement[], scope: Nullable<Scope>, baseParam: IAstNodeParameter) {
+  constructor(
+    init: Nullable<Expression | VariableDeclare>,
+    condition: Nullable<Expression>,
+    increment: Nullable<Expression>,
+    statementList: Statement[],
+    scope: Nullable<Scope>,
+    baseParam: IAstNodeParameter,
+  ) {
     super(baseParam);
     this.init = init;
     this.condition = condition;

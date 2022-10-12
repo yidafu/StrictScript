@@ -14,7 +14,12 @@ class VariableDeclare extends Declare {
 
   inferredType: Type | null = null;
 
-  constructor(name: string, variableType: Type, initExp: Expression | null, baseParam: IAstNodeParameter) {
+  constructor(
+    name: string,
+    variableType: Type,
+    initExp: Expression | null,
+    baseParam: IAstNodeParameter,
+  ) {
     super(name, baseParam);
     this.variableType = variableType;
     this.init = initExp;

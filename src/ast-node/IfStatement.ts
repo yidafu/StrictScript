@@ -11,7 +11,12 @@ class IfStatement extends Statement {
 
   elseStatement: Nullable<Statement[]>;
 
-  constructor(condition: Expression, thenStatement: Statement[], elseStatement: Nullable<Statement[]>, baseParam: IAstNodeParameter) {
+  constructor(
+    condition: Expression,
+    thenStatement: Statement[],
+    elseStatement: Nullable<Statement[]>,
+    baseParam: IAstNodeParameter,
+  ) {
     super(baseParam);
     this.condition = condition;
     this.thenStatement = thenStatement;

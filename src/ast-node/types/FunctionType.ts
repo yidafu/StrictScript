@@ -18,7 +18,7 @@ class FunctionType extends Type {
   }
 
   le(type2: Type): boolean {
-    if (type2 == BuiltinType.Any) {
+    if (type2 === BuiltinType.Any) {
       return true;
     } if (this === type2) {
       return true;

@@ -1,5 +1,24 @@
 import {
-  BinaryExpression, Block, BooleanLiteral, BuiltinType, CallSignature, DecimalLiteral, Expression, ExpressionStatement, ForStatement, FunctionCall, FunctionDeclare, IfStatement, IntegetLiteral, ParameterList, Program, ReturnStatement, Statement, StringLiteral, Variable, VariableDeclare,
+  BinaryExpression,
+  Block,
+  BooleanLiteral,
+  BuiltinType,
+  CallSignature,
+  DecimalLiteral,
+  Expression,
+  ExpressionStatement,
+  ForStatement,
+  FunctionCall,
+  FunctionDeclare,
+  IfStatement,
+  IntegetLiteral,
+  ParameterList,
+  Program,
+  ReturnStatement,
+  Statement,
+  StringLiteral,
+  Variable,
+  VariableDeclare,
 } from '../ast-node';
 import { UnaryExpression } from '../ast-node/UnaryExpression';
 import { Operator, Tokenizer, TokenType } from '../tokenizer';
@@ -90,7 +109,9 @@ class Parser {
       throw new Error(`Expecting ';' after return stateent. ${this.tokenizer.lastPositon}`);
     }
 
-    return new ReturnStatement(exp, { beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false });
+    return new ReturnStatement(exp, {
+      beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
+    });
   }
 
   parseVariableDeclare() {
@@ -175,7 +196,7 @@ class Parser {
 
     const operatorStack: Operator[] = [];
 
-    while (token.type === TokenType.Operator && tPrec == assignPrec) {
+    while (token.type === TokenType.Operator && tPrec === assignPrec) {
       operatorStack.push(token.value as Operator);
       this.tokenizer.next();
       const exp = this.parseBinaryExpression(assignPrec);
@@ -225,16 +246,19 @@ class Parser {
     if (token.type === TokenType.Operator) {
       this.tokenizer.next();
       const exp = this.parseUnaryExpression();
-      return new UnaryExpression(token.value as Operator, exp, true, { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } else {
-      const exp = this.parsePrimary();
-      const token = this.tokenizer.peek();
-      if (token.type === TokenType.Operator && (token.value === '--' || token.value === '++')) {
-        this.tokenizer.next();
-        return new UnaryExpression(token.value as Operator, exp, false, { beginPosition, endPosition: this.tokenizer.lastPositon });
-      }
-      return exp;
+      return new UnaryExpression(token.value as Operator, exp, true, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
     }
+    const exp = this.parsePrimary();
+    const token1 = this.tokenizer.peek();
+    if (token1.type === TokenType.Operator && (token1.value === '--' || token1.value === '++')) {
+      this.tokenizer.next();
+      return new UnaryExpression(token1.value as Operator, exp, false, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    }
+    return exp;
   }
 
   parsePrimary(): Expression {
@@ -248,13 +272,19 @@ class Parser {
       return new Variable(token.value, { beginPosition, endPosition: this.tokenizer.lastPositon });
     } if (token?.type === TokenType.IntegerLiteral) {
       this.tokenizer.next();
-      return new IntegetLiteral(parseInt(token.value), { beginPosition, endPosition: this.tokenizer.lastPositon });
+      return new IntegetLiteral(parseInt(token.value, 10), {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
     } if (token?.type === TokenType.DecimalLiteral) {
       this.tokenizer.next();
-      return new DecimalLiteral(parseFloat(token.value), { beginPosition, endPosition: this.tokenizer.lastPositon });
+      return new DecimalLiteral(parseFloat(token.value), {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
     } if (token?.type === TokenType.StringLiteral) {
       this.tokenizer.next();
-      return new StringLiteral(token.value, { beginPosition, endPosition: this.tokenizer.lastPositon });
+      return new StringLiteral(token.value, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
     } if (token?.type === TokenType.BooleanLiteral) {
       this.tokenizer.next();
       return new BooleanLiteral(token.value === 'true', { beginPosition, endPosition: this.tokenizer.lastPositon });
@@ -325,7 +355,9 @@ class Parser {
         returnType = this.parseTypeAnnotation();
       }
 
-      return new CallSignature(parameterList, this.parseType(returnType), { beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false });
+      return new CallSignature(parameterList, this.parseType(returnType), {
+        beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
+      });
     }
     throw new Error(`Expecting a ')' after a call signature ${this.tokenizer.lastPositon}`);
   }
@@ -344,7 +376,9 @@ class Parser {
           varType = this.parseTypeAnnotation();
         }
         parameterList.push(
-          new VariableDeclare(token.value, this.parseType(varType), null, { beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false }),
+          new VariableDeclare(token.value, this.parseType(varType), null, {
+            beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
+          }),
         );
 
         token = this.tokenizer.peek();
@@ -362,7 +396,9 @@ class Parser {
       }
     }
 
-    return new ParameterList(parameterList, { beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false });
+    return new ParameterList(parameterList, {
+      beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
+    });
   }
 
   parseTypeAnnotation() {
@@ -400,7 +436,9 @@ class Parser {
   parseExpressionStatement() {
     const beginPosition = this.tokenizer.peek().position;
     const exp = this.parseExpression();
-    const stmt = new ExpressionStatement(exp, { beginPosition, endPosition: this.tokenizer.lastPositon });
+    const stmt = new ExpressionStatement(exp, {
+      beginPosition, endPosition: this.tokenizer.lastPositon,
+    });
 
     const semiToken = this.tokenizer.peek();
     if (semiToken.type === TokenType.Seperator && semiToken.value === ';') {
@@ -442,7 +480,9 @@ class Parser {
       this.tokenizer.next();
     }
 
-    return new FunctionCall(token.value, params, { beginPosition, endPosition: this.tokenizer.lastPositon });
+    return new FunctionCall(token.value, params, {
+      beginPosition, endPosition: this.tokenizer.lastPositon,
+    });
     // token2 = this.tokenizer.next();
     // if (token2?.value === ';') {
     // } else {
@@ -476,7 +516,9 @@ class Parser {
           }
         }
 
-        return new IfStatement(condition, thenStmts, elseStmts, { beginPosition, endPosition: this.tokenizer.lastPositon });
+        return new IfStatement(condition, thenStmts, elseStmts, {
+          beginPosition, endPosition: this.tokenizer.lastPositon,
+        });
       }
       throw new Error(`Expecting ')' at the end of if condition, but we got ${closeParenToken.value} ${this.tokenizer.lastPositon}`);
     } else {
@@ -522,7 +564,9 @@ class Parser {
           const closeBraceToken = this.tokenizer.peek();
           if (closeBraceToken.type === TokenType.Seperator && closeBraceToken.value === '}') {
             this.tokenizer.next(); // skio } token
-            return new ForStatement(initExp, conditionExp, incrementExp, stmts, null, { beginPosition, endPosition: this.tokenizer.lastPositon });
+            return new ForStatement(initExp, conditionExp, incrementExp, stmts, null, {
+              beginPosition, endPosition: this.tokenizer.lastPositon,
+            });
           }
           throw new Error(`Expecting '{' while parsing for block, but we got ${openBracketToken.value} ${this.tokenizer.lastPositon}`);
         } else {

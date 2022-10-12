@@ -1,5 +1,26 @@
 import {
-  BinaryExpression, Block, BooleanLiteral, CallSignature, DecimalLiteral, ErrorExpression, ErrorStatement, ExpressionStatement, ForStatement, FunctionCall, FunctionDeclare, IfStatement, IntegetLiteral, NullLiteral, ParameterList, Program, ReturnStatement, StringLiteral, UndefinedLiteral, Variable, VariableDeclare, VariableStatement,
+  BinaryExpression,
+  Block,
+  BooleanLiteral,
+  CallSignature,
+  DecimalLiteral,
+  ErrorExpression,
+  ErrorStatement,
+  ExpressionStatement,
+  ForStatement,
+  FunctionCall,
+  FunctionDeclare,
+  IfStatement,
+  IntegetLiteral,
+  NullLiteral,
+  ParameterList,
+  Program,
+  ReturnStatement,
+  StringLiteral,
+  UndefinedLiteral,
+  Variable,
+  VariableDeclare,
+  VariableStatement,
 } from '../ast-node';
 import { UnaryExpression } from '../ast-node/UnaryExpression';
 
@@ -152,13 +173,13 @@ class Dumper extends AstVisitor {
   }
 
   // eslint-disable-next-line no-unused-vars
-  visitErrorExpression(errExp: ErrorExpression): string {
-    return `ErrorExpression\n`;
+  visitErrorExpression(_errExp: ErrorExpression): string {
+    return 'ErrorExpression\n';
   }
 
   // eslint-disable-next-line no-unused-vars
-  visitErrorStatement(errStmt: ErrorStatement): string {
-    return `ErrorStatement\n`;
+  visitErrorStatement(_errStmt: ErrorStatement): string {
+    return 'ErrorStatement\n';
   }
 }
 

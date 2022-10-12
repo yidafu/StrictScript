@@ -14,7 +14,12 @@ class FunctionDeclare extends Declare {
 
   symbol: FunctionSymbol | null = null;
 
-  constructor(name: string, callSignature: CallSignature, body: Block, baseParam: IAstNodeParameter) {
+  constructor(
+    name: string,
+    callSignature: CallSignature,
+    body: Block,
+    baseParam: IAstNodeParameter,
+  ) {
     super(name, baseParam);
     this.callSignature = callSignature;
     this.body = body;

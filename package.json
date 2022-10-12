@@ -4,6 +4,7 @@
   "description": "Typescript subset Implement.",
   "main": "index.js",
   "scripts": {
+    "lint": "pure lint --fix",
     "test": "jest",
     "prepare": "husky install"
   },
@@ -18,9 +19,9 @@
   },
   "homepage": "https://github.com/yidafu/StrictScript#readme",
   "devDependencies": {
-    "@pure-org/cli": "^0.2.8",
-    "@pure-org/eslint-config-water": "^0.2.8",
-    "@pure-org/water-plugin-lint": "^0.2.8",
+    "@pure-org/cli": "^0.2.9",
+    "@pure-org/eslint-config-water": "^0.2.9",
+    "@pure-org/water-plugin-lint": "^0.2.9",
     "@types/jest": "^27.5.1",
     "@types/node": "^17.0.36",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
