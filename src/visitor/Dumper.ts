@@ -3,7 +3,9 @@ import {
   Block,
   BooleanLiteral,
   CallSignature,
+  ConstructorCall,
   DecimalLiteral,
+  DotExpression,
   ErrorExpression,
   ErrorStatement,
   ExpressionStatement,
@@ -17,6 +19,9 @@ import {
   Program,
   ReturnStatement,
   StringLiteral,
+  SuperCall,
+  SuperExpression,
+  ThisExpression,
   UndefinedLiteral,
   Variable,
   VariableDeclare,
@@ -25,11 +30,12 @@ import {
 import { ClassBody } from '../ast-node/ClassBody';
 import { ClassDeclare } from '../ast-node/ClassDeclare';
 import { ConstructorDeclare } from '../ast-node/ConstructorDeclare';
+import { TypeofExpression } from '../ast-node/TypeofExpression';
 import { UnaryExpression } from '../ast-node/UnaryExpression';
 
 import { AstVisitor } from './AstVisitor';
 
-function addPrefixPadding(str: string, padding = '\t') {
+function addPrefixPadding(str: string, padding = '    ') {
   return str.split('\n').filter(Boolean).map((s: string) => padding + s).join('\n');
 }
 
@@ -79,7 +85,7 @@ class Dumper extends AstVisitor {
   }
 
   visitBlock(block: Block) {
-    let output = 'Block:';
+    let output = 'Block:\n';
     for (const stmt of block.stmts) {
       output += `${addPrefixPadding(this.visit(stmt))}\n`;
     }
@@ -128,7 +134,7 @@ class Dumper extends AstVisitor {
   }
 
   visitBinary(exp: BinaryExpression): string {
-    return `Binary: ${exp.operator} ${exp.theType?.name}\n${addPrefixPadding(this.visit(exp.expL))
+    return `Binary: ${exp.operator}\n${addPrefixPadding(this.visit(exp.expL))
     }\n${addPrefixPadding(this.visit(exp.expR))}`;
   }
 
@@ -210,8 +216,48 @@ class Dumper extends AstVisitor {
   }
 
   visitConstructorDeclare(constructorDeclare: ConstructorDeclare) {
-    return `ConstructorDeclare: ${constructorDeclare.name}\n${addPrefixPadding(this.visit(constructorDeclare.callSignature))
-    }\n${addPrefixPadding(this.visit(constructorDeclare.body))}`;
+    return [
+      `Constructor Declare: ${constructorDeclare.name}`,
+      addPrefixPadding(this.visit(constructorDeclare.callSignature)),
+      addPrefixPadding(this.visit(constructorDeclare.body)),
+    ].join('\n');
+  }
+
+  visitTypeofExpression(typeofExpression: TypeofExpression) {
+    this.visit(typeofExpression.exp);
+  }
+
+  visitConstructorCall(constructorCall: ConstructorCall) {
+    let output = 'Constructor Call:\n';
+    for (const param of constructorCall.parameters) {
+      output += `${addPrefixPadding(this.visit(param))}\n`;
+    }
+
+    return output;
+  }
+
+  visitSuperCall(superCall: SuperCall) {
+    let output = 'Supper Call:\n';
+    for (const param of superCall.parameters) {
+      output += `${addPrefixPadding(this.visit(param))}\n`;
+    }
+
+    return output;
+  }
+
+  visitDotExpression(dotExpression: DotExpression) {
+    let output = 'Dot Expression:\n';
+    output += `${addPrefixPadding(`Left Expression:\n${addPrefixPadding(this.visit(dotExpression.expL))}`)}\n`;
+    output += `${addPrefixPadding(`Right Expression:\n${addPrefixPadding(this.visit(dotExpression.expR))}`)}\n`;
+    return output;
+  }
+
+  visitSuperExpression(superExpression: SuperExpression) {
+    return 'Super Expression\n';
+  }
+
+  visitThisExpression(thisExpression: ThisExpression) {
+    return 'This Expression\n';
   }
 }
 

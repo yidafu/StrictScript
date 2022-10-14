@@ -10,8 +10,6 @@ class FunctionSymbol extends Symbol {
 
   declare: Nullable<FunctionDeclare> = null;
 
-  // type = SymbolType.Function;
-
   constructor(name: string, theType: FunctionType, vars: VariableSymbol[] = []) {
     super(name, SymbolType.Function);
     this.variables = vars;

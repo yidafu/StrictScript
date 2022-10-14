@@ -19,6 +19,11 @@ import {
   Variable,
   ErrorExpression,
   ErrorStatement,
+  ConstructorCall,
+  DotExpression,
+  SuperExpression,
+  ThisExpression,
+  SuperCall,
 } from '../ast-node';
 import { ClassBody } from '../ast-node/ClassBody';
 import { ClassDeclare } from '../ast-node/ClassDeclare';
@@ -26,6 +31,7 @@ import { ConstructorDeclare } from '../ast-node/ConstructorDeclare';
 import { FunctionCall } from '../ast-node/FunctionCall';
 import { FunctionDeclare } from '../ast-node/FunctionDeclare';
 import { Program } from '../ast-node/Program';
+import { TypeofExpression } from '../ast-node/TypeofExpression';
 import { UnaryExpression } from '../ast-node/UnaryExpression';
 
 abstract class AstVisitor {
@@ -171,14 +177,54 @@ abstract class AstVisitor {
   }
 
   visitClassDeclare(classDeclare: ClassDeclare) {
-
+    this.visit(classDeclare.classBobdy);
   }
 
   visitClassBody(classBobdy: ClassBody) {
+    if (classBobdy.constructorDeclare) {
+      this.visit(classBobdy.constructorDeclare);
+    }
 
+    for (const propertyDeclare of classBobdy.propertyDeclares) {
+      this.visit(propertyDeclare);
+    }
+
+    for (const methodDeclare of classBobdy.methodDeclares) {
+      this.visit(methodDeclare);
+    }
   }
 
   visitConstructorDeclare(constructorDeclare: ConstructorDeclare) {
+    this.visit(constructorDeclare.callSignature);
+    this.visit(constructorDeclare.body);
+  }
+
+  visitTypeofExpression(typeofExpression: TypeofExpression) {
+    this.visit(typeofExpression.exp);
+  }
+
+  visitConstructorCall(constructorCall: ConstructorCall) {
+    for (const parm of constructorCall.parameters) {
+      this.visit(parm);
+    }
+  }
+
+  visitSuperCall(superCall: SuperCall) {
+    for (const parm of superCall.parameters) {
+      this.visit(parm);
+    }
+  }
+
+  visitDotExpression(dotExpression: DotExpression) {
+    this.visit(dotExpression.expL);
+    this.visit(dotExpression.expR);
+  }
+
+  visitSuperExpression(superExpression: SuperExpression) {
+
+  }
+
+  visitThisExpression(thisExpression: ThisExpression) {
 
   }
 }

@@ -14,10 +14,11 @@ export function isCharacterDigitOrUnderScore(char: string): boolean {
   return isCharacter(char) || isDigit(char) || char === '_';
 }
 
-const SEPERATOR = ['(', ')', '{', '}', ';', ',', ':', '?', '@'];
+export type TSeperator = '(' | ')' | '{' | '}' | ';' | ',' | ' |' | ':' | '?' | '@' | '.';
+const SEPERATOR: TSeperator[] = ['(', ')', '{', '}', ';', ',', ':', '?', '@', '.'];
 
-export function isSeperator(char: string) {
-  return SEPERATOR.includes(char);
+export function isSeperator(char: string): char is TSeperator {
+  return SEPERATOR.includes(char as TSeperator);
 }
 
 /**
@@ -36,7 +37,7 @@ export type KeyWord =
   // 内置变量
   | 'true' | 'false' | 'null' | 'undefined'
   // 对象
-  | 'this' | 'new' | 'implements' | 'extends' | 'interface' | 'private' | 'protected' | 'public' | 'static' | 'prackage' | 'constructor';
+  | 'this' | 'new' | 'implements' | 'extends' | 'interface' | 'private' | 'protected' | 'public' | 'static' | 'prackage' | 'constructor' | 'super';
 
 export const KEY_WORDS = new Set<KeyWord>([
   // 变量申明
@@ -44,7 +45,7 @@ export const KEY_WORDS = new Set<KeyWord>([
   'throw', 'try', 'catch', 'finally', 'return', 'break', 'continue', 'in', 'instanceof', 'yield',
   'typeof', 'delete', 'debugger', 'default', 'import', 'export', 'true', 'false', 'null',
   'undefined', 'this', 'new', 'implements', 'extends', 'interface', 'private', 'protected',
-  'public', 'static', 'prackage', 'constructor',
+  'public', 'static', 'prackage', 'constructor', 'super',
 ]);
 
 export function isKeyword(str: string): str is KeyWord {

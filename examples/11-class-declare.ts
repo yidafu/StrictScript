@@ -5,15 +5,20 @@ declare global {
 }
 
 dumpAst(`
+let c = new Child(1, 2);
 class Child extends Parent  {
+  a = 0;
   b: number;
   c: number = 1;
 
-  constructor(b: number) {
+  constructor(a: number, b: number) {
+    super(a);
+    this.b = b;
   }
 
   add() {
-
+    super.obj.prop;
+    return this.a + this.b + this.c;
   }
 }
 `);

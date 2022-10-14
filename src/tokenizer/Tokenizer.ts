@@ -77,9 +77,9 @@ class Tokenizer {
         if (!(char1 >= '1' && char1 <= '9')) {
           // TODO: 支持八进制、二进制、十六进制
           numberLiteral = '0';
-        } else {
-          throw new Error(`0 cannot followed by other digit. at line: ${this.stream.line} col: ${this.stream.column}`);
+          return new Token(TokenType.IntegerLiteral, numberLiteral, pos);
         }
+        throw new Error(`0 cannot followed by other digit. at line: ${this.stream.line} col: ${this.stream.column}`);
       } else if ((char >= '1' && char <= '9') || (char === '0' && char1 === '.')) {
         numberLiteral += char;
         while (isDigit(char1)) {
