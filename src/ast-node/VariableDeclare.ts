@@ -3,26 +3,31 @@ import { AstVisitor, VariableSymbol } from '../visitor';
 import { IAstNodeParameter } from './AstNode';
 import { Declare } from './Declare';
 import { Expression } from './Expression';
-import { Type } from './types';
+import { TypeExpression } from './TypeExpression';
+import { BuiltinType, Type } from './types';
 
 class VariableDeclare extends Declare {
-  variableType: Type;
+  variableType: Type = BuiltinType.Any;
 
-  init: Expression | null = null;
+  variableTypeExpression: Nullable<TypeExpression> = null;
 
-  symbol: VariableSymbol | null = null;
+  init: Nullable<Expression> = null;
 
-  inferredType: Type | null = null;
+  symbol: Nullable<VariableSymbol> = null;
+
+  inferredType: Type = BuiltinType.Any;
 
   constructor(
     name: string,
-    variableType: Type,
+    variableTypeExpression: Nullable<TypeExpression>,
     initExp: Expression | null,
     baseParam: IAstNodeParameter,
   ) {
     super(name, baseParam);
-    this.variableType = variableType;
+    this.variableTypeExpression = variableTypeExpression;
+    if (this.variableTypeExpression) this.variableTypeExpression.parentNode = this;
     this.init = initExp;
+    if (this.init) this.init.parentNode = this;
   }
 
   accept(visitor: AstVisitor) {

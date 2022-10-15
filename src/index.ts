@@ -3,22 +3,31 @@ import { Interpreter } from './interpreter';
 import { Parser } from './parser';
 import { InputStream } from './tokenizer';
 import { Tokenizer } from './tokenizer/Tokenizer';
-import { Dumper } from './visitor/Dumper';
-import { Enter } from './visitor/Enter';
-import { LeftValueAttributor } from './visitor/LeftValueAttributor';
-import { RefResolver } from './visitor/RefResolver';
-import { Scope } from './visitor/Scope';
+import { SemanticAnalyer } from './visitor/SemanticAnalyer';
+import { Dumper } from './visitor/dumper/AstDumper';
 
 function executeCode(sourceCode: string) {
   const tokenizer = new Tokenizer(new InputStream(sourceCode));
-
+  console.time('解析代码');
   const program: Program = new Parser(tokenizer).parseProgram();
-  const globalScope = new Scope();
-  new Enter(globalScope).visit(program);
-  new RefResolver(globalScope).visit(program);
-  new LeftValueAttributor().visit(program);
+  console.timeEnd('解析代码');
 
+  console.log('================ dump AST ===============');
+  new Dumper().visit(program);
+  console.log('================ dump AST ===============');
+
+  console.time('语言分析');
+  const semanticAnalyer = new SemanticAnalyer();
+  semanticAnalyer.execute(program);
+  console.timeEnd('语言分析');
+
+  console.log();
+  console.log();
+  console.time('解释执行');
   const retVal = new Interpreter().visit(program);
+  console.log();
+  console.log();
+  console.timeEnd('解释执行');
   console.log(retVal);
 }
 
@@ -26,7 +35,6 @@ function dumpAst(sourceCode: string) {
   const tokenizer = new Tokenizer(new InputStream(sourceCode));
 
   const program: Program = new Parser(tokenizer).parseProgram();
-  new Dumper().visit(program);
 }
 
 export {

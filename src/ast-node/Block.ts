@@ -11,6 +11,9 @@ class Block extends AstNode {
   constructor(stmts: Statement[], baseParam: IAstNodeParameter) {
     super(baseParam);
     this.stmts = stmts;
+    for (const statement of this.stmts) {
+      statement.parentNode = this;
+    }
   }
 
   accept(visitor: AstVisitor) {

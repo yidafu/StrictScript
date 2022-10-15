@@ -19,11 +19,6 @@ class RefResolver extends SemanticAstVisitor {
 
   declareVariableMap: Map<Scope, Map<string, VariableSymbol>> = new Map();
 
-  constructor(symbolTable: Scope) {
-    super();
-    this.scope = symbolTable;
-  }
-
   visitFunctionDeclare(funcDecl: FunctionDeclare) {
     const oldScope = this.scope;
     this.scope = funcDecl.scope;

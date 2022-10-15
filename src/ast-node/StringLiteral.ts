@@ -1,10 +1,13 @@
 import { AstVisitor } from '../visitor';
 
 import { IAstNodeParameter } from './AstNode';
-import { Expression } from './Expression';
+import { LiteralExpression } from './LiteralExpression';
+import { BuiltinType } from './types';
 
-class StringLiteral extends Expression {
+class StringLiteral extends LiteralExpression {
   value: string;
+
+  theType = BuiltinType.String;
 
   constructor(value: string, baseParam: IAstNodeParameter) {
     super(baseParam);

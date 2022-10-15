@@ -9,6 +9,9 @@ class ParameterList extends AstNode {
   constructor(parameters: VariableDeclare[], baseParam: IAstNodeParameter) {
     super(baseParam);
     this.parameters = parameters;
+    for (const parameter of this.parameters) {
+      parameter.parentNode = this;
+    }
   }
 
   public accept(visitor: AstVisitor) {

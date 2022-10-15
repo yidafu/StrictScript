@@ -4,20 +4,39 @@ export * from './types';
 export { AstNode } from './AstNode';
 export { Block } from './Block';
 
-export { FunctionCall } from './FunctionCall';
-export { FunctionDeclare } from './FunctionDeclare';
-
-export { VariableDeclare } from './VariableDeclare';
-
 export { Variable } from './Variable';
 export { Expression } from './Expression';
+
+// 函数
+export { FunctionCall } from './FunctionCall';
+export { FunctionDeclare } from './FunctionDeclare';
+export { ReturnStatement } from './ReturnStatement';
+export { CallSignature } from './CallSignature';
+export { ParameterList } from './ParamterList';
+
+export { VariableDeclare } from './VariableDeclare';
 export { VariableStatement } from './VariableStatement';
+
 export { ExpressionStatement } from './ExpressionStatement';
 export { BinaryExpression } from './BinaryExpression';
-export { ReturnStatement } from './ReturnStatement';
+export * from './UnaryExpression';
+
+// 流程控制语句
 export { IfStatement } from './IfStatement';
 export { ForStatement } from './ForStatement';
 
+// 类相关
+export { ConstructorCall } from './ConstructorCall';
+export { ClassBody } from './ClassBody';
+export { ClassDeclare } from './ClassDeclare';
+export { ThisExpression } from './ThisExpression';
+export { SuperExpression } from './SuperExpression';
+export { DotExpression } from './DotExpression';
+export * from './SupperCall';
+export * from './ConstructorDeclare';
+
+// 字面量
+export * from './LiteralExpression';
 export { BooleanLiteral } from './BooleanLiteral';
 export { StringLiteral } from './StringLiteral';
 export { NullLiteral } from './NullLiteral';
@@ -25,8 +44,15 @@ export { IntegetLiteral } from './IntegetLiteral';
 export { DecimalLiteral } from './DecimalLiteral';
 export { UndefinedLiteral } from './UndefinedLiteral';
 
-export { CallSignature } from './CallSignature';
-export { ParameterList } from './ParamterList';
+// 类型相关
+export * from './LiteralTypeExpression';
+export * from './PrimaryTypeExpression';
+export * from './TypeExpression';
+export * from './TypeReferenceExpression';
+export * from './ParenthesizedPrimaryTypeExpression';
+export * from './UnionOrInersectionTypeExpression';
+export * from './TypeofExpression';
+export * from './PredefinedTypeExpression';
 
 export { Program } from './Program';
 export { Statement } from './Statement';

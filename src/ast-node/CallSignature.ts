@@ -2,17 +2,26 @@ import { AstVisitor } from '../visitor';
 
 import { AstNode, IAstNodeParameter } from './AstNode';
 import { ParameterList } from './ParamterList';
-import { Type } from './types';
+import { TypeExpression } from './TypeExpression';
+import { BuiltinType, Type } from './types';
 
 class CallSignature extends AstNode {
   paramters: Nullable<ParameterList>;
 
-  returnType: Type;
+  returnType: Type = BuiltinType.Void;
 
-  constructor(paramters: Nullable<ParameterList>, returnType: Type, baseParam: IAstNodeParameter) {
+  returnTypeExpression: Nullable<TypeExpression>;
+
+  constructor(
+    paramters: Nullable<ParameterList>,
+    returnTypeExpression: Nullable<TypeExpression>,
+    baseParam: IAstNodeParameter,
+  ) {
     super(baseParam);
     this.paramters = paramters;
-    this.returnType = returnType;
+    if (this.paramters) this.paramters.parentNode = this;
+    this.returnTypeExpression = returnTypeExpression;
+    if (this.returnTypeExpression) this.returnTypeExpression.parentNode = this;
   }
 
   public accept(visitor: AstVisitor) {

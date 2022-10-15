@@ -14,6 +14,8 @@ class BinaryExpression extends Expression {
     this.operator = operator;
     this.expL = expL;
     this.expR = expR;
+    this.expL.parentNode = this;
+    this.expR.parentNode = this;
   }
 
   accept(visitor: AstVisitor) {

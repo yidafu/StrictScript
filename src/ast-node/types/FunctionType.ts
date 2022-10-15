@@ -5,13 +5,17 @@ import { Type } from './Type';
 import { isUnionType } from './utils';
 
 class FunctionType extends Type {
-  returnType: Type;
+  returnType: Type = BuiltinType.Void;
 
   parameterTypes: Type[];
 
   static index = 0;
 
-  constructor(name: string, parmeterTypes: Type[], returnType: Type = BuiltinType.Void) {
+  constructor(
+    name: string,
+    parmeterTypes: Type[],
+    returnType: Type,
+  ) {
     super(`@function${typeof name === 'string' ? name : FunctionType.index++}`);
     this.parameterTypes = parmeterTypes;
     this.returnType = returnType;
@@ -33,7 +37,7 @@ class FunctionType extends Type {
   }
 
   hasVoid() {
-    throw this.returnType.hasVoid();
+    return false;
   }
 
   toString(): string {

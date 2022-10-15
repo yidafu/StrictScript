@@ -12,16 +12,33 @@ import {
   FunctionDeclare,
   IfStatement,
   IntegetLiteral,
+  LiteralTypeExpression,
+  NullLiteral,
   ParameterList,
+  PredefinedTypeExpression,
   Program,
   ReturnStatement,
   Statement,
   StringLiteral,
+  SuperCall,
+  ThisExpression,
+  TypeExpression,
+  TypeReferenceExpression,
   Variable,
   VariableDeclare,
 } from '../ast-node';
+import { ClassBody } from '../ast-node/ClassBody';
+import { ClassDeclare } from '../ast-node/ClassDeclare';
+import { ConstructorCall } from '../ast-node/ConstructorCall';
+import { ConstructorDeclare } from '../ast-node/ConstructorDeclare';
+import { DotExpression } from '../ast-node/DotExpression';
+import { SuperExpression } from '../ast-node/SuperExpression';
+import { TypeofExpression } from '../ast-node/TypeofExpression';
 import { UnaryExpression } from '../ast-node/UnaryExpression';
-import { Operator, Tokenizer, TokenType } from '../tokenizer';
+import {
+  KeyWord,
+  Operator, Position, Tokenizer, TokenType,
+} from '../tokenizer';
 
 import { getPrecedence } from './utils';
 
@@ -58,37 +75,62 @@ class Parser {
 
   parseStatement(): Statement | null {
     const token = this.tokenizer.peek();
-    if (token?.type === TokenType.Keyword) {
-      if (token.value === 'function') {
-        return this.parseFunctionDeclare();
-      }
-      if (token.value === 'let') {
-        return this.parseVariableDeclare();
-      }
-      if (token.value === 'return') {
-        return this.parseReturnStatement();
-      }
-      if (token.value === '{') {
-        return this.parseBlock();
-      }
-      if (token.value === 'if') {
-        return this.parseIfStatement();
-      }
-      if (token.value === 'for') {
-        return this.parseForStatement();
-      }
-      throw new Error(`Not support keyword ${token.value}`);
-    } else if (token !== null && (
+
+    if (token.isKeyworkd('function')) {
+      return this.parseFunctionDeclare();
+    }
+
+    if (token.isKeyworkd('let') || token.isKeyworkd('const')) {
+      return this.parseVariableDeclare();
+    }
+
+    if (token.isKeyworkd('return')) {
+      return this.parseReturnStatement();
+    }
+
+    if (token.isKeyworkd('if')) {
+      return this.parseIfStatement();
+    }
+
+    if (token.isKeyworkd('for')) {
+      return this.parseForStatement();
+    }
+
+    if (token.isKeyworkd('class')) {
+      return this.parseClassDeclare();
+    }
+
+    if (token.isSeperator('{')) {
+      return this.parseBlock();
+    }
+
+    if (token !== null && (
       token.type === TokenType.Identifier
       || token.type === TokenType.DecimalLiteral
       || token.type === TokenType.IntegerLiteral
       || token.type === TokenType.StringLiteral
-      || token.value === '('
+      || token.isSeperator('(')
+      || token.isKeyworkd('this')
+      || token.isKeyworkd('super')
     )) {
       return this.parseExpressionStatement();
-    } else {
-      throw new Error(`cannot recognize a expression starting with ${token?.value}`);
     }
+
+    // if (token.isKeyworkd('super')) {
+    //   const token1 = this.tokenizer.peek2();
+    //   if (token1.isSeperator('(')) {
+    //     const superCall = this.parseSuperCall();
+    //     const closeParenthesisToken = this.tokenizer.peek();
+    //     if (closeParenthesisToken.isSeperator(';')) {
+    //       this.tokenizer.next();
+    //     }
+    //     return superCall;
+    //   } else {
+    //     return this.parseExpressionStatement();
+    //   }
+    // }
+
+    throw new Error(`cannot recognize a expression starting with ${token?.value} ${this.tokenizer.lastPositon}`);
   }
 
   parseReturnStatement() {
@@ -117,23 +159,19 @@ class Parser {
   parseVariableDeclare() {
     const beginPosition = this.tokenizer.peek().position;
     this.tokenizer.next();
+    return this.parseVariableDeclareWithoutDeclarator(beginPosition);
+  }
 
+  parseVariableDeclareWithoutDeclarator(beginPosition: Position) {
     const token = this.tokenizer.next();
     if (token?.type === TokenType.Identifier) {
       const variableName = token.value;
-      let variableType = 'any';
+      let typeExpression: Nullable<TypeExpression> = null;
       let initExpression: Expression | null = null;
 
       const colonToken = this.tokenizer.peek();
       if (colonToken?.type === TokenType.Seperator && colonToken.value === ':') {
-        this.tokenizer.next();
-        const typeToken = this.tokenizer.peek();
-        if (typeToken?.type === TokenType.Identifier) {
-          this.tokenizer.next();
-          variableType = typeToken.value;
-        } else {
-          throw new Error('Error parsing type annotation in VariableDeclare');
-        }
+        typeExpression = this.parseTypeAnnotation();
       }
 
       const equalSignToken = this.tokenizer.peek();
@@ -145,7 +183,7 @@ class Parser {
       const semicolonToken = this.tokenizer.peek();
       if (semicolonToken?.type === TokenType.Seperator && semicolonToken.value === ';') {
         this.tokenizer.next();
-        return new VariableDeclare(variableName, this.parseType(variableType), initExpression, {
+        return new VariableDeclare(variableName, typeExpression, initExpression, {
           beginPosition,
           endPosition: this.tokenizer.lastPositon,
           isErrorNode: false,
@@ -157,27 +195,84 @@ class Parser {
     }
   }
 
-  parseType(varType: string) {
-    switch (varType) {
-      case 'any':
-        return BuiltinType.Any;
-      case 'number':
-        return BuiltinType.Number;
-      case 'string':
-        return BuiltinType.String;
-      case 'boolean':
-        return BuiltinType.Boolean;
-      case 'null':
-        return BuiltinType.Null;
-      case 'undefined':
-        return BuiltinType.Undefined;
-      case 'integet':
-        return BuiltinType.Integer;
-      case 'decimal':
-        return BuiltinType.Decimal;
-      default:
-        return BuiltinType.Any;
+  parseType() {
+    // const beginPosition = this.tokenizer.postToken;
+
+    const types: TypeExpression[] = [];
+    types.push(this.parsePrimaryTypeExpression());
+
+    // TODO: 支持解析联合类型
+
+    return types[0];
+  }
+
+  parsePrimaryTypeExpression() {
+    const beginPosition = this.tokenizer.peek().position;
+
+    const token = this.tokenizer.peek();
+    if (token.type === TokenType.Identifier) {
+      this.tokenizer.next();
+      return new TypeReferenceExpression(token.value, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
     }
+    if (
+      token.isKeyworkd('any')
+      || token.isKeyworkd('boolean')
+      || token.isKeyworkd('number')
+      || token.isKeyworkd('string')
+      || token.isKeyworkd('void')
+    ) {
+      this.tokenizer.next();
+      return new PredefinedTypeExpression(
+        token.value as KeyWord,
+        { beginPosition, endPosition: this.tokenizer.lastPositon },
+      );
+    }
+
+    if (token.isLiterator()) {
+      const literal = this.parseLiteral();
+      return new LiteralTypeExpression(literal, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    }
+    // TODO: (number|string)   string[]
+    throw new Error('unknow type expression');
+  }
+
+  parseLiteral() {
+    const token = this.tokenizer.peek();
+    const beginPosition = token.position;
+    if (token.type === TokenType.IntegerLiteral) {
+      this.tokenizer.next();
+      return new IntegetLiteral(
+        parseInt(token.value, 10),
+        { beginPosition, endPosition: this.tokenizer.lastPositon },
+      );
+    }
+    if (token.type === TokenType.DecimalLiteral) {
+      this.tokenizer.next();
+      return new DecimalLiteral(
+        parseFloat(token.value),
+        { beginPosition, endPosition: this.tokenizer.lastPositon },
+      );
+    }
+    if (token.type === TokenType.NullLiteral) {
+      this.tokenizer.next();
+      return new NullLiteral({
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    }
+
+    if (token.type === TokenType.BooleanLiteral) {
+      return new BooleanLiteral(token.value === 'true', {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    }
+    this.tokenizer.next();
+    return new StringLiteral(token.value, {
+      beginPosition, endPosition: this.tokenizer.lastPositon,
+    });
   }
 
   parseExpression(): Expression {
@@ -264,48 +359,89 @@ class Parser {
   parsePrimary(): Expression {
     const token = this.tokenizer.peek();
     const beginPosition = token.position;
+
+    let expL: Nullable<Expression> = null;
+
     if (token?.type === TokenType.Identifier) {
       if (this.tokenizer.peek2().value === '(') {
-        return this.parseFunctionCall();
+        expL = this.parseFunctionCall();
       }
       this.tokenizer.next();
-      return new Variable(token.value, { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } if (token?.type === TokenType.IntegerLiteral) {
+      expL = new Variable(token.value, { beginPosition, endPosition: this.tokenizer.lastPositon });
+    } else if (token?.type === TokenType.IntegerLiteral) {
       this.tokenizer.next();
-      return new IntegetLiteral(parseInt(token.value, 10), {
+      expL = new IntegetLiteral(parseInt(token.value, 10), {
         beginPosition, endPosition: this.tokenizer.lastPositon,
       });
-    } if (token?.type === TokenType.DecimalLiteral) {
+    } else if (token?.type === TokenType.DecimalLiteral) {
       this.tokenizer.next();
-      return new DecimalLiteral(parseFloat(token.value), {
+      expL = new DecimalLiteral(parseFloat(token.value), {
         beginPosition, endPosition: this.tokenizer.lastPositon,
       });
-    } if (token?.type === TokenType.StringLiteral) {
+    } else if (token?.type === TokenType.StringLiteral) {
       this.tokenizer.next();
-      return new StringLiteral(token.value, {
+      expL = new StringLiteral(token.value, {
         beginPosition, endPosition: this.tokenizer.lastPositon,
       });
-    } if (token?.type === TokenType.BooleanLiteral) {
+    } else if (token?.type === TokenType.BooleanLiteral) {
       this.tokenizer.next();
-      return new BooleanLiteral(token.value === 'true', { beginPosition, endPosition: this.tokenizer.lastPositon });
-    } if (token?.type === TokenType.Seperator && token.value === '(') {
+      expL = new BooleanLiteral(token.value === 'true', { beginPosition, endPosition: this.tokenizer.lastPositon });
+    } else if (token?.type === TokenType.Seperator && token.value === '(') {
       this.tokenizer.next();
       const exp = this.parseExpression();
       const closeParenthesisToken = this.tokenizer.peek();
       if (closeParenthesisToken?.type === TokenType.Seperator && closeParenthesisToken.value === ')') {
         this.tokenizer.next();
-        return exp;
+        expL = exp;
       }
       throw new Error(`Expecting a ')' ad the end of a primary expression, but we got a ${token.value}`);
+    } else if (token?.isKeyworkd('typeof')) {
+      this.tokenizer.next(); // eat typeof keyword
+      const exp = this.parseExpression();
+      expL = new TypeofExpression(exp, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    } else if (token?.isKeyworkd('this')) {
+      this.tokenizer.next(); // eat this
+      expL = new ThisExpression({
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    } else if (token?.isKeyworkd('super')) {
+      const token1 = this.tokenizer.peek2();
+      if (token1.isSeperator('(')) {
+        expL = this.parseSuperCall();
+      } else {
+        this.tokenizer.next(); // eat super keyword
+        expL = new SuperExpression({
+          beginPosition, endPosition: this.tokenizer.lastPositon,
+        });
+      }
+    } else if (token?.isKeyworkd('new')) {
+      this.tokenizer.next(); // eat new keywork
+      expL = this.parseContructorCall();
     } else {
       throw new Error(`cannot recognize a primary expression starting with: ${token?.value}`);
     }
+
+    let seperatorToken = this.tokenizer.peek();
+    while (seperatorToken.isSeperator('.')) {
+      this.tokenizer.next();
+      const expR = this.parsePrimary();
+      expL = new DotExpression(expL, expR);
+
+      seperatorToken = this.tokenizer.peek();
+    }
+
+    return expL;
   }
 
   parseFunctionDeclare(): FunctionDeclare {
     const beginPosition = this.tokenizer.peek().position;
     this.tokenizer.next();
+    return this.parseMethodDeclare(beginPosition);
+  }
 
+  parseMethodDeclare(beginPosition: Position) {
     const token = this.tokenizer.next();
     if (token?.type === TokenType.Identifier) {
       const token1 = this.tokenizer.peek();
@@ -349,13 +485,13 @@ class Parser {
     if (closeParanToken.type === TokenType.Seperator && closeParanToken.value === ')') {
       this.tokenizer.next();
 
-      let returnType = 'any';
+      let returnType: Nullable<TypeExpression> = null;
       const colonToken = this.tokenizer.peek();
       if (colonToken.type === TokenType.Seperator && colonToken.value === ':') {
         returnType = this.parseTypeAnnotation();
       }
 
-      return new CallSignature(parameterList, this.parseType(returnType), {
+      return new CallSignature(parameterList, returnType, {
         beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
       });
     }
@@ -370,13 +506,13 @@ class Parser {
     while (token.type !== TokenType.Seperator && token.value !== ')') {
       if (token.type === TokenType.Identifier) {
         this.tokenizer.next();
-        let varType = 'any';
+        let varType: Nullable<TypeExpression> = null;
         const colonToken = this.tokenizer.peek();
         if (colonToken.type === TokenType.Seperator && colonToken.value === ':') {
           varType = this.parseTypeAnnotation();
         }
         parameterList.push(
-          new VariableDeclare(token.value, this.parseType(varType), null, {
+          new VariableDeclare(token.value, varType, null, {
             beginPosition, endPosition: this.tokenizer.lastPositon, isErrorNode: false,
           }),
         );
@@ -402,19 +538,9 @@ class Parser {
   }
 
   parseTypeAnnotation() {
-    let theType = 'any';
+    this.tokenizer.next(); // eat :
 
-    this.tokenizer.next();
-
-    const token = this.tokenizer.peek();
-
-    if (token.type === TokenType.Identifier) {
-      this.tokenizer.next();
-      theType = token.value;
-    } else {
-      throw new Error(`Expecting a type name in type annotation ${this.tokenizer.lastPositon}`);
-    }
-    return theType;
+    return this.parseType();
   }
 
   parseBlock() {
@@ -449,12 +575,26 @@ class Parser {
     return stmt;
   }
 
+  parseContructorCall() {
+    const funcCall = this.parseFunctionCall();
+    return new ConstructorCall(funcCall.parameters, {
+      beginPosition: funcCall.beginPosition, endPosition: funcCall.endPosition,
+    });
+  }
+
+  parseSuperCall() {
+    const funcCall = this.parseFunctionCall();
+    return new SuperCall(funcCall.parameters, {
+      beginPosition: funcCall.beginPosition, endPosition: funcCall.endPosition,
+    });
+  }
+
   parseFunctionCall(): FunctionCall {
     const params: Expression[] = [];
     const token = this.tokenizer.next();
     const beginPosition = token.position;
 
-    this.tokenizer.next();
+    this.tokenizer.next(); // eat function name
     // if (token1?.value === '(') {
     let token2 = this.tokenizer.peek();
     if (token2?.type === TokenType.Seperator && token.value !== ')') {
@@ -598,6 +738,98 @@ class Parser {
       return expression;
     }
     throw new Error(`Expecting ';' while pareing for expression, but we got ${semiToken.value} ${this.tokenizer.lastPositon}`);
+  }
+
+  parseClassDeclare() {
+    const beginPosition = this.tokenizer.peek().position;
+    // eat class keyword
+    this.tokenizer.next();
+    const token = this.tokenizer.peek();
+    let className = '';
+    if (token.type === TokenType.Identifier) {
+      className = token.value;
+      this.tokenizer.next();
+    }
+    let superClass: Nullable<string> = null;
+    const token2 = this.tokenizer.peek();
+    if (token2.type === TokenType.Keyword && token2.value === 'extends') {
+      this.tokenizer.next(); // eat extends keyword
+      const superClassToken = this.tokenizer.peek();
+      if (superClassToken.type === TokenType.Identifier) {
+        superClass = superClassToken.value;
+        this.tokenizer.next();
+      } else {
+        throw new Error(`Expecting a indetifier after extends keyword, but we got ${superClassToken.value} ${this.tokenizer.lastPositon}`);
+      }
+    }
+    const openBraceToken = this.tokenizer.peek();
+    if (openBraceToken.type === TokenType.Seperator && openBraceToken.value === '{') {
+      const classBody = this.parseClassBody();
+      return new ClassDeclare(className, superClass, classBody, {
+        beginPosition, endPosition: this.tokenizer.lastPositon,
+      });
+    }
+    throw new Error(`Expecting Class body start with '{', but we got ${openBraceToken.value} ${this.tokenizer.lastPositon}`);
+  }
+
+  parseClassBody(): ClassBody {
+    const topBeginPosition = this.tokenizer.peek().position;
+    this.tokenizer.next(); // eat {
+    const beginPosition = this.tokenizer.peek().position;
+    let token = this.tokenizer.peek();
+    let constructorDeclare: Nullable<ConstructorDeclare> = null;
+    const propertyDeclares: VariableDeclare[] = [];
+    const methodDeclares: FunctionDeclare[] = [];
+    while (
+      (token.type === TokenType.Keyword && token.value === 'constructor')
+      || (token.type === TokenType.Identifier)
+    ) {
+      if (token.type === TokenType.Keyword && token.value === 'constructor') {
+        constructorDeclare = this.parseConstructorDeclare();
+      } else if (token.type === TokenType.Identifier) {
+        // 分两种情况：属性和方法
+        const token1 = this.tokenizer.peek2();
+        if (token1.type === TokenType.Seperator && token1.value === '(') { // 方法
+          const methodDeclare = this.parseMethodDeclare(beginPosition);
+          methodDeclares.push(methodDeclare);
+        } else { // 属性
+          const propertyDeclare = this.parseVariableDeclareWithoutDeclarator(beginPosition);
+          propertyDeclares.push(propertyDeclare);
+        }
+      }
+      token = this.tokenizer.peek();
+    }
+
+    const closeBraceToken = this.tokenizer.peek();
+    if (closeBraceToken.type === TokenType.Seperator && closeBraceToken.value === '}') {
+      this.tokenizer.next();
+      return new ClassBody(constructorDeclare, methodDeclares, propertyDeclares, {
+        beginPosition: topBeginPosition,
+        endPosition: this.tokenizer.lastPositon,
+      });
+    }
+    throw new Error(`Expection Class Body endwith '}', but wo got ${closeBraceToken.value} ${this.tokenizer.lastPositon}`);
+  }
+
+  parseConstructorDeclare(): ConstructorDeclare {
+    const beginPosition = this.tokenizer.peek().position;
+    this.tokenizer.next(); // eat constructor keyword
+    const token1 = this.tokenizer.peek();
+    if (token1.type === TokenType.Seperator && token1.value === '(') {
+      const callSignature = this.parseCallSignature();
+      const openBraceToken = this.tokenizer.peek();
+      if (openBraceToken.type === TokenType.Seperator && openBraceToken.value === '{') {
+        const functionBody = this.parseBlock();
+        return new ConstructorDeclare('constructor', callSignature, functionBody, {
+          beginPosition,
+          endPosition: this.tokenizer.lastPositon,
+          isErrorNode: false,
+        });
+      }
+      throw new Error(`Expecting '{' in Constructor Declare, while we got a ${openBraceToken.value} ${this.tokenizer.lastPositon}`);
+    } else {
+      throw new Error(`Expecting ')' in Constructor Declare, while we got a ${token1.value}`);
+    }
   }
 }
 

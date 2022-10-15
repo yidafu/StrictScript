@@ -22,7 +22,9 @@ class FunctionDeclare extends Declare {
   ) {
     super(name, baseParam);
     this.callSignature = callSignature;
+    this.callSignature.parentNode = this;
     this.body = body;
+    this.body.parentNode = this;
   }
 
   public accept(visitor: AstVisitor) {

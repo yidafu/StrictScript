@@ -20,6 +20,7 @@ class UnaryExpression extends Expression {
     super(baseParam);
     this.operator = operator;
     this.exp = exp;
+    this.exp.parentNode = this;
     this.ifPrefix = isPrefix;
   }
 
