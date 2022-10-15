@@ -26,9 +26,17 @@ class ForStatement extends Statement {
   ) {
     super(baseParam);
     this.init = init;
+    if (this.init) this.init.parentNode = this;
     this.condition = condition;
+    if (this.condition) this.condition.parentNode = this;
     this.increment = increment;
+    if (this.increment) this.increment.parentNode = this;
     this.statementList = statementList;
+    if (this.statementList) {
+      for (const statement of this.statementList) {
+        statement.parentNode = this;
+      }
+    }
     this.scope = scope;
   }
 

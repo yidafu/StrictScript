@@ -14,6 +14,7 @@ class TypeofExpression extends Expression {
   ) {
     super(baseParam);
     this.exp = exp;
+    this.exp.parentNode = exp;
     this.ifPrefix = true;
   }
 

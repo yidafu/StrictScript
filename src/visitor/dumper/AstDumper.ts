@@ -26,18 +26,16 @@ import {
   Variable,
   VariableDeclare,
   VariableStatement,
-} from '../ast-node';
-import { ClassBody } from '../ast-node/ClassBody';
-import { ClassDeclare } from '../ast-node/ClassDeclare';
-import { ConstructorDeclare } from '../ast-node/ConstructorDeclare';
-import { TypeofExpression } from '../ast-node/TypeofExpression';
-import { UnaryExpression } from '../ast-node/UnaryExpression';
+} from '../../ast-node';
+import { ClassBody } from '../../ast-node/ClassBody';
+import { ClassDeclare } from '../../ast-node/ClassDeclare';
+import { ConstructorDeclare } from '../../ast-node/ConstructorDeclare';
+import { TypeofExpression } from '../../ast-node/TypeofExpression';
+import { UnaryExpression } from '../../ast-node/UnaryExpression';
 
-import { AstVisitor } from './AstVisitor';
+import { AstVisitor } from '../AstVisitor';
 
-function addPrefixPadding(str: string, padding = '    ') {
-  return str.split('\n').filter(Boolean).map((s: string) => padding + s).join('\n');
-}
+import { addPrefixPadding } from './utils';
 
 class Dumper extends AstVisitor {
   visitProgram(program: Program) {
@@ -68,7 +66,7 @@ class Dumper extends AstVisitor {
   }
 
   visitCallSignature(callSignature: CallSignature) {
-    let output = `Return Type: ${callSignature.returnType.name}\n`;
+    let output = `Return Type: ${callSignature.returnType?.name}\n`;
     if (callSignature.paramters != null) {
       output += addPrefixPadding(this.visit(callSignature.paramters));
     }

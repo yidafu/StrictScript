@@ -47,6 +47,15 @@ class Token {
   isIentifier(identifier: string) {
     return this.type === TokenType.Identifier && this.value === identifier;
   }
+
+  isLiterator() {
+    return this.type === TokenType.StringLiteral
+    || this.type === TokenType.BooleanLiteral
+    || this.type === TokenType.DecimalLiteral
+    || this.type === TokenType.NullLiteral
+    || this.type === TokenType.IntegerLiteral
+    || this.type === TokenType.UndefinedLiteral;
+  }
 }
 
 export { Token, TokenType };

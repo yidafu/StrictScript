@@ -22,8 +22,17 @@ class ClassBody extends AstNode {
   ) {
     super(baseParam);
     this.constructorDeclare = constructorDeclare;
+    if (this.constructorDeclare) {
+      this.constructorDeclare.parentNode = this;
+    }
     this.propertyDeclares = propertyDeclares;
+    for (const propertyDeclare of this.propertyDeclares) {
+      propertyDeclare.parentNode = this;
+    }
     this.methodDeclares = methodDeclares;
+    for (const methodDeclare of this.methodDeclares) {
+      methodDeclare.parentNode = this;
+    }
   }
 
   accept(visitor: AstVisitor) {

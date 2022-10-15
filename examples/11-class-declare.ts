@@ -1,11 +1,12 @@
-import { dumpAst } from '../src';
+import { executeCode } from '../src';
 
 declare global {
   type Nullable<T> = T | null;
 }
 
-dumpAst(`
+executeCode(`
 let c = new Child(1, 2);
+class Parent {}
 class Child extends Parent  {
   a = 0;
   b: number;
@@ -17,7 +18,6 @@ class Child extends Parent  {
   }
 
   add() {
-    super.obj.prop;
     return this.a + this.b + this.c;
   }
 }

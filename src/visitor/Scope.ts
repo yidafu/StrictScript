@@ -1,3 +1,5 @@
+import { AstNode } from '../ast-node';
+
 import { Symbol } from './symbol';
 
 class Scope {
@@ -5,12 +7,15 @@ class Scope {
 
   enclosingScope: Scope | null = null;
 
-  constructor(scope: Scope | null = null) {
+  node: AstNode;
+
+  constructor(node: AstNode, scope: Scope | null = null) {
+    this.node = node;
     this.enclosingScope = scope;
   }
 
   getSymbol(variableName: string) {
-    return this.nameSymbolMap.get(variableName);
+    return this.nameSymbolMap.get(variableName) ?? null;
   }
 
   hasSymbol(variableName: string) {

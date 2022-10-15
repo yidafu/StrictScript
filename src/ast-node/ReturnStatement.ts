@@ -10,6 +10,7 @@ class ReturnStatement extends Statement {
   constructor(exp: Nullable<Expression>, baseParam: IAstNodeParameter) {
     super(baseParam);
     this.exp = exp;
+    if (this.exp) this.exp.parentNode = this;
   }
 
   public accept(visitor: AstVisitor) {

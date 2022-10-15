@@ -14,6 +14,9 @@ class FunctionCall extends Expression {
     super(baseParam);
     this.name = name;
     this.parameters = parameters;
+    for (const parameter of this.parameters) {
+      parameter.parentNode = this;
+    }
   }
 
   public accept(visitor: AstVisitor) {

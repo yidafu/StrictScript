@@ -24,27 +24,41 @@ import {
   SuperExpression,
   ThisExpression,
   SuperCall,
+  Program,
+  ClassBody,
+  ClassDeclare,
+  FunctionCall,
+  FunctionDeclare,
+  LiteralTypeExpression,
+  ParenthesizedPrimaryTypeExpression,
+  TypeReferenceExpression,
+  TypeofExpression,
+  ConstructorDeclare,
+  UnaryExpression,
+  UnionOrIntersectionTypeExpression,
+  LiteralExpression,
 } from '../ast-node';
-import { ClassBody } from '../ast-node/ClassBody';
-import { ClassDeclare } from '../ast-node/ClassDeclare';
-import { ConstructorDeclare } from '../ast-node/ConstructorDeclare';
-import { FunctionCall } from '../ast-node/FunctionCall';
-import { FunctionDeclare } from '../ast-node/FunctionDeclare';
-import { Program } from '../ast-node/Program';
-import { TypeofExpression } from '../ast-node/TypeofExpression';
-import { UnaryExpression } from '../ast-node/UnaryExpression';
+import { PredefinedTypeExpression } from '../ast-node/PredefinedTypeExpression';
 
 abstract class AstVisitor {
+  static getProgram(node: AstNode) {
+    let pNode = node;
+    while (pNode.parentNode) {
+      pNode = pNode.parentNode;
+    }
+
+    if (pNode instanceof Program) {
+      return pNode;
+    }
+    throw new Error('expecting the root of AST is Program node');
+  }
+
   visit(node: AstNode) {
     return node.accept(this);
   }
 
   visitProgram(program: Program) {
-    let retVal;
-    for (const stmt of program.stmts) {
-      retVal = this.visit(stmt);
-    }
-    return retVal;
+    return this.visitBlock(program);
   }
 
   visitVariableStatement(variableStatement: VariableStatement) {
@@ -225,6 +239,34 @@ abstract class AstVisitor {
   }
 
   visitThisExpression(thisExpression: ThisExpression) {
+
+  }
+
+  visitLiteralExpression(lireralExpression: LiteralExpression) {
+
+  }
+
+  visitLiteralTypeExpression(literalTypeExpression: LiteralTypeExpression, additional?: any) {
+
+  }
+
+  visitParenthesizedPrimaryTypeExpression(
+    parenthesizedPrimaryTypeExpression: ParenthesizedPrimaryTypeExpression,
+  ) {
+
+  }
+
+  visitTypeReferenceExpression(typeReferenceExpresion: TypeReferenceExpression) {
+
+  }
+
+  visitUnionOrIntersectionTypeExpression(
+    unionOrIntersectionTYpeExpression: UnionOrIntersectionTypeExpression,
+  ) {
+
+  }
+
+  visitPredefinedTypeExpression(predefinedTypeExpression: PredefinedTypeExpression) {
 
   }
 }

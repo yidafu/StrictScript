@@ -1,4 +1,4 @@
-import { AstVisitor, FunctionSymbol } from '../visitor';
+import { AstVisitor, ClassSymbol, FunctionSymbol } from '../visitor';
 
 import { IAstNodeParameter } from './AstNode';
 import { ClassBody } from './ClassBody';
@@ -9,7 +9,7 @@ class ClassDeclare extends Declare {
 
   supperClass: string | null;
 
-  symbol: FunctionSymbol | null = null;
+  symbol: ClassSymbol | null = null;
 
   constructor(
     name: string,
@@ -20,6 +20,7 @@ class ClassDeclare extends Declare {
     super(name, baseParam);
     this.supperClass = supperClass;
     this.classBobdy = classBobdy;
+    this.classBobdy.parentNode = this;
   }
 
   public accept(visitor: AstVisitor) {

@@ -14,6 +14,9 @@ class ConstructorCall extends Expression {
     super(baseParam);
     this.name = 'constructor';
     this.parameters = parameters;
+    for (const parameter of this.parameters) {
+      parameter.parentNode = this;
+    }
   }
 
   public accept(visitor: AstVisitor) {

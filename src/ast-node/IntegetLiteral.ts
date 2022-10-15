@@ -1,10 +1,13 @@
 import { AstVisitor } from '../visitor';
 
 import { IAstNodeParameter } from './AstNode';
-import { Expression } from './Expression';
+import { LiteralExpression } from './LiteralExpression';
+import { BuiltinType } from './types';
 
-class IntegetLiteral extends Expression {
+class IntegetLiteral extends LiteralExpression {
   value: number;
+
+  theType = BuiltinType.Integer;
 
   constructor(value: number, baseParam: IAstNodeParameter) {
     super(baseParam);

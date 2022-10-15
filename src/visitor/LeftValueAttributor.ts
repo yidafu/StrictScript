@@ -54,7 +54,7 @@ class LeftValueAttributor extends SemanticAstVisitor {
   visitFunctionCall(funcCall: FunctionCall) {
     if (this.parentOperator === '.') {
       const funcType = funcCall.theType;
-      if (funcType !== null && isFunctionType(funcType) && !funcType.returnType.hasVoid()) {
+      if (funcType !== null && isFunctionType(funcType) && !funcType.returnType?.hasVoid()) {
         funcCall.isLeftValue = true;
       }
     }

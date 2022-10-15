@@ -36,6 +36,8 @@ export type KeyWord =
   | 'default' | 'import' | 'export'
   // 内置变量
   | 'true' | 'false' | 'null' | 'undefined'
+  // ts 类型
+  | 'any' | 'void' | 'number' | 'string' | 'boolean'
   // 对象
   | 'this' | 'new' | 'implements' | 'extends' | 'interface' | 'private' | 'protected' | 'public' | 'static' | 'prackage' | 'constructor' | 'super';
 
@@ -46,6 +48,7 @@ export const KEY_WORDS = new Set<KeyWord>([
   'typeof', 'delete', 'debugger', 'default', 'import', 'export', 'true', 'false', 'null',
   'undefined', 'this', 'new', 'implements', 'extends', 'interface', 'private', 'protected',
   'public', 'static', 'prackage', 'constructor', 'super',
+  'any', 'void', 'number', 'string', 'boolean',
 ]);
 
 export function isKeyword(str: string): str is KeyWord {

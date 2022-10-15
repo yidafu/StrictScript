@@ -10,6 +10,7 @@ class VariableStatement extends Statement {
   constructor(variableDeclare: VariableDeclare, baseParam: IAstNodeParameter) {
     super(baseParam);
     this.variableDeclare = variableDeclare;
+    this.variableDeclare.parentNode = this;
   }
 
   public accept(visitor: AstVisitor) {

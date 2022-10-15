@@ -10,6 +10,7 @@ class ExpressionStatement extends Statement {
   constructor(exp: Expression, baseParam: IAstNodeParameter) {
     super(baseParam);
     this.exp = exp;
+    this.exp.parentNode = this;
   }
 
   accept(visitor: AstVisitor) {

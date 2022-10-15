@@ -19,8 +19,17 @@ class IfStatement extends Statement {
   ) {
     super(baseParam);
     this.condition = condition;
+    this.condition.parentNode = this;
     this.thenStatement = thenStatement;
+    for (const statement of this.thenStatement) {
+      statement.parentNode = this;
+    }
     this.elseStatement = elseStatement;
+    if (this.elseStatement) {
+      for (const statement of this.elseStatement) {
+        statement.parentNode = this;
+      }
+    }
   }
 
   public accept(visitor: AstVisitor) {

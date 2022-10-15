@@ -10,7 +10,9 @@ class DotExpression extends Expression {
   constructor(expL: Expression, expR: Expression, isErrorNode: boolean = false) {
     super({ beginPosition: expL.beginPosition, endPosition: expR.endPosition, isErrorNode });
     this.expL = expL;
+    this.expL.parentNode = this;
     this.expR = expR;
+    this.expR.parentNode = this;
   }
 
   accept(visitor: AstVisitor) {

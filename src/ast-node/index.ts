@@ -19,6 +19,7 @@ export { VariableStatement } from './VariableStatement';
 
 export { ExpressionStatement } from './ExpressionStatement';
 export { BinaryExpression } from './BinaryExpression';
+export * from './UnaryExpression';
 
 // 流程控制语句
 export { IfStatement } from './IfStatement';
@@ -32,14 +33,26 @@ export { ThisExpression } from './ThisExpression';
 export { SuperExpression } from './SuperExpression';
 export { DotExpression } from './DotExpression';
 export * from './SupperCall';
+export * from './ConstructorDeclare';
 
 // 字面量
+export * from './LiteralExpression';
 export { BooleanLiteral } from './BooleanLiteral';
 export { StringLiteral } from './StringLiteral';
 export { NullLiteral } from './NullLiteral';
 export { IntegetLiteral } from './IntegetLiteral';
 export { DecimalLiteral } from './DecimalLiteral';
 export { UndefinedLiteral } from './UndefinedLiteral';
+
+// 类型相关
+export * from './LiteralTypeExpression';
+export * from './PrimaryTypeExpression';
+export * from './TypeExpression';
+export * from './TypeReferenceExpression';
+export * from './ParenthesizedPrimaryTypeExpression';
+export * from './UnionOrInersectionTypeExpression';
+export * from './TypeofExpression';
+export * from './PredefinedTypeExpression';
 
 export { Program } from './Program';
 export { Statement } from './Statement';
